@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <title>Assembler</title>
+   <style>
+      body{
+         margin:10px;
+         background:#2EB;
+         align: center;
+         text-align: center;
+      }
+      #assy                   { position:absolute; top: 200px; left: 0% ; width:30%; }
+      #div_assembled_code     { position:absolute; top: 200px; left: 33% ; width:30%; }
+      #div_dissassembled_code { position:absolute; top: 200px; left: 66% ; width:30%; }
+      #instruction_set        { position:absolute; top: 1400px; text-align:left; }
+      textarea {
+         width:100%;
+         padding: 3px;
+         
+         border-radius: 5px;
+         border: 1px solid;
+      }
+
+
+   </style>
+</head>
+<body>
+<div id="taustalakana">
+
+
+<h1>Assembler for 4bit CPU</h1>
+<p>(Instruction set below)</p>
+
+<div id="text_areas">
+<div id="assy">
+<h2>Assembly</h2>
+<p>Here is a little example, 
+</p> <p> keyboard buffer of some sort.</p>
+<p>&nbsp;</p>
+<textarea id="koodi" rows="60" cols="50">
+*************************************
+*                                   *
+* Keyboard buffer;                  *
+*    Relay input if they have       *
+*    changed status from zero.      *
+*                                   *
+*************************************
+
+
+setup:
+   *
+   * set ddr, 
+   *  i/o 4-7 input = iiii = 1111
+   *  i/o 8-11 output = oooo = 0000        
+   *
+   
+   * r0 = 1111
+   ldr 0000 1111
+   * put r0 to ddr 4-7
+   put 0000 0011
+   
+   
+   * r0 = 0000
+   ldr 0000 0000
+   * put r0 to ddr 8-11
+   put 0000 0100
+   
+loop:
+   *
+   * check if input = 0
+   *
+   
+   * r0 = input 4-7
+   get 0000 0110
+   * If r0 is not zero, 
+   * jump to label not_zero
+   bne not_zero
+   
+   * was zero, 4 nops 
+   nop
+   nop
+   nop
+   nop
+   * Back to beginning of loop
+   jmp loop
+
+not_zero:
+   * put r0 to page 0 instruction 7
+   * wich is I/O 8-11
+   put 0000 0111
+   jmp loop
+
+</textarea>
+
+</div>
+
+<div id="div_assembled_code">
+<h2>Assembled binary</h2>
+<p>&nbsp;</p>
+<button onclick="assemble()">Assemble</button><br>
+<p>&nbsp;</p>
+<textarea rows="60" cols="50" id="tulos">
+</textarea>
+</div> 
+
+<div id="div_dissassembled_code">
+<h2>Dissassembled code</h2>
+<p>If "Assembled binary" is empty,</p>
+<button onclick="dissassebler()">Dissassemble</button><br>
+<p> I read from "Assembly"-box.</p>
+<textarea rows="60" cols="50"  id="disasm">
+</textarea>
+</div> 
+
+</div>
+
+<div id="instruction_set">
+<h2>Instruction Set and Memory Map</h2>
+<pre>
+<b>
+
+Registers
+   r0 acts as Accumulator, most used register.
+   r1-r6 are general purpose registers.
+
+Memory is Von Neumann type ( one memory ), labeled as page and index,
+       so maximum memory is 256 4-bit slots. You cannot program the first 
+       memory page, but all values can be altered for example with "put".
+
+DDR is like in PIC-prosessors, IN I 1 and OUT O 0 => input=1 and output=0.
+    If we want (from lsb) bit 0 and 3 to be in and others out, we put value 
+    1001 into ddr.
+
+I/O
+   There is 12 pins to be controlled. Easily scaleable to even 200 pins.
+   
+Flags
+   For now, zero, ovf and carry.
+
+        <b>  Instructions </b>                                                                                                 <b>  Memory </b>
+                           Parameters 
+Binary       command       1         2                  Explanation                                          Memory without code</b>, d=don't care
+0000         nop           -         -                  No operation                                             
+0001         jmp  p  i     page      instruction        Jump to page p, instruction i                        i    Page 0                               i     Every other page    
+0010         get  p  i     page      instruction        Register r0 = memory page p instruction i            0    dddd    program counter              0     0000      Programmable code starts here on page 1 
+0011         put  p  i     page      instruction        memory page p instruction i = r0                     1    dddd    flags                        1     0000       
+                                                                                                             2    1111    DDR for pins  0-3            2     0000           
+0100         ldr  r  v     register  value              Load value v in any register r                       3    1111    DDR for pins  4-7            3     0000       
+0101         crr  r  r'    register  register           register r = r' s value                              4    1111    DDR for pins  8-11           4     0000       
+0110         and  r  r'    register  register           r0  = r  and r'                                      5    dddd    I/O for pins  0-3            5     0000       
+0111         lor  r  r'    register  register           r0  = r  logical or r'                               6    dddd    I/O for pins  4-7            6     0000       
+                                                                                                             7    dddd    I/O for pins  8-11           7     0000       
+1000         not  r  r'    register  register           r' =  not r                                          8    0000    r0    output of logic        8     0000       
+1001         xor  r  r'    register  register           r0  = r  xor r'                                      9    0000    r1      r1-r6                9     0000       
+1010         lsh  r  v     register  value              r0 = r &lt;&lt; v                                          a    0000    r2       are                 a     0000       
+1011         rsh  r  v     register  value              r0 = r &gt;&gt; v                                          b    0000    r3      general              b     0000       
+                                                                                                             c    0000    r4      purpose              c     0000       
+1100         add  r  r'    register  register           r0 = r + r'                                          d    0000    r5     registers             d     0000       
+1101         neg  r  r'    register  register           if r'=1010 =&gt; r=0101                                 e    0000    r6                           e     0000       
+1110         beq  p  i     page      instruction        If zero flag =&gt; jmp p,i                              f    0000      empty, but editable        f     0000       
+1111         bne  p  i     page      instruction        If !zero flag =&gt; jmp p,i                      
+                                                                                                           
+                                                                                                      
+Example of them all
+
+Example              Where name comes, what does the command do
+nop                  No OPeration, Don't do anything, for timings etc.        
+jmp 0001 0000        JuMP, Program_Counter/next executed command = 0001 0000 
+get 0000 0101        GET value of to r0, r0 = value of 0000 0101  ( r0 =  I/O 0-3 )
+put 0000 0010        PUT value of r0 to, r0's value is copied to 0000 0010 ( DDR 0-3 )
+
+ldr 0010 0110        LoaD to Register, r2 = 6
+crr 0110 0011        Copy Register value to another Register, r6 = r3                   
+and 0001 0010        logical AND, r0 = r1 and r2
+lor 0100 0110        Logical OR, r0 = r4 or r6
+
+not 0101 0011        logical NOT, r5 = not r3
+xor 0010 0011        eXclusive OR, r0 = r2 xor r3
+lsh 0001 0001        Left SHift,  r1 = r1 &lt;&lt; 1
+rsh 0110 0101        Right SHift, r6 = r6 &gt;&gt; 5                                                                                                           
+
+add 0100 0010        full ADDer, r0 = r4 + r2
+neg 0001 0100        NEGate, r1 = one's complement of r4
+beq 0001 0000        Branch if EQual to zero, If zero flag =1 , jmp 0001 0000
+bne 0010 1111        Branch if Not Equal, if zero flag =0 , jmp 0010 1111
+
+</pre>  
+</div>
+
+
+</div>
+</body>
+
+
+
+<script>
+
+function assemble(){
+   
+   // hae assembly
+   var assy=document.getElementById("koodi").value;   
+
+   // kaikki merkit pieniksi
+   assy = assy.toLowerCase();
+
+   // Jokainen rivi on oma elementtinsä
+   assy = assy.split("\n");
+   
+   // Whitespace pois
+   for( i=0 ; i<assy.length ; i++){
+      assy[i] = assy[i].trim();      
+   }
+   
+   // Poistetaan vielä tyhjät ja äskön tyhjentyneet rivit
+   for ( i = assy.length-1 ; i >= 0; i--) {
+      if( assy[i][0] == "*" ){
+         assy.splice(i,1);
+      }
+      
+      if ( assy[i] === ""){
+         assy.splice(i,1);         
+      }
+   }
+
+   // Labelien rivinumerot ja nimet
+   var label_line = [];
+   var label_name = []; 
+   
+   // Löydä label:it ja anna niille rivinumerot, labelin viimeinen merkki on :
+   for( i=0 ; i<assy.length ; i++){
+      if( assy[i][assy[i].length-1] == ":"){
+         label_line.push(i);
+         label_name.push((assy[i]).slice(0,-1)); // ei haluta "4:" mukaan
+      }
+   }
+  
+   // labelien takia tarvitaan osoitekartta
+   var osoitteet = [ 0 ];
+   var osoiteindeksi = 0;
+   for(i=0 ; i< assy.length ; i++){
+      osoiteindeksi=osoiteindeksi+1;
+
+      if( onko_jonossa_arvoa(assy[i],':') ){
+         osoiteindeksi=osoiteindeksi-1;
+      }
+
+      else if ( assy[i] == "nop" ){
+         osoitteet.push(osoiteindeksi);   
+      }
+      else{
+         osoiteindeksi=osoiteindeksi+2;
+         osoitteet.push(osoiteindeksi);
+      }
+   }
+   // off by one virhe
+   osoitteet.pop();
+
+   
+   // Kehitetään labelien lopulliset osoitteet
+   var labels_bin = [];
+
+   for ( i =0 ; i<label_line.length ; i++ ){
+      // sivu saadaan näemmä kaavalla. (arvo - arvo%16) / 16) . Bruteforcetetaan yhtälöitä =)
+      var sivu = ((osoitteet[label_line[i]-i] - (osoitteet[label_line[i]-i] %16))/16);
+      var indeksi =  osoitteet[label_line[i]-i] - sivu*16 ;
+      // Ja nollas sivu on järjestelmälle, oikeasti siis tarvitaan +1
+      sivu = parseInt(sivu) + 1;
+      labels_bin.push( sivu + " " + indeksi );
+   } 
+
+   // Labelit pois
+   for( i=(assy.length-1) ; i>=0 ; i--){
+      if( onko_jonossa_arvoa(label_line , i) )
+         assy.splice(i,1);         
+   }  
+       
+   // Käydään kaikki läpi, erotellaan välilyönnein. 
+   var assy_apu = [];
+   var apu ="";
+   for( i=0 ; i<assy.length ; i++){
+      apu = assy[i].split(" ");
+
+      // Jos lukuja on 1 => nop
+      if( apu.length == 1){
+         assy_apu.push("0000");
+      }
+      
+      // jos lukuja 2 => label
+      else if( apu.length == 2){
+          //assy_apu.push(apu[0]);
+          assy_apu.push( numero_nelitavuiseksi(muuntotaulukko(apu[0])));
+          for( j=0 ; j<label_name.length ; j++){
+          
+             // jos jälkimmäinen osio löytyy label-luettelosta
+             if( label_name[j] == apu[1]) {
+                // laita assy_apun sivuksi tämän sivu
+                assy_apu.push( (numero_nelitavuiseksi( ( ( labels_bin[j].split(" ")[0] ) ))));            
+                assy_apu.push( (numero_nelitavuiseksi(labels_bin[j].split(" ")[1] )));
+                //assy_apu.push( (numero_nelitavuiseksi(rivien_summa[j])));
+                 
+             }
+           }
+      }
+      else if( apu.length == 3){
+         assy_apu.push( numero_nelitavuiseksi(muuntotaulukko(apu[0])));
+         assy_apu.push(apu[1]);
+         assy_apu.push(apu[2]);
+      }
+      else{
+        alert("Error at line " + i+1 );
+      }
+   }
+
+   document.getElementById("tulos").innerHTML = assy_apu.join("\n");   
+}
+
+   //
+   //  Disassembler
+   //
+function dissassebler(){
+   
+   //document.getElementById("tulos").innerHTML = assy_apu.join("\n");   
+   var bin = document.getElementById("tulos").value;
+   
+   // check if the middle box even contains anything
+   if(bin.length == 0){
+      //it didn't, let's read the input from leftmost box
+      bin = document.getElementById("koodi").value;   
+   }
+
+   // Poistetaan whitespace
+   bin = bin.replace( /\s+/g, "");
+
+   var alerted = 0;
+   // Binäärissä saa olla vain 1 ja 0
+   for( var i=0 ; i<bin.length ; i++){
+      if( ( bin[i] != "1" ) && ( bin[i] != "0") ){
+         if( alerted == 0){
+            alert("Not valid binary symbol! Symbol: '" + bin[i]);
+            alerted=alerted+1;
+         }
+      }
+   }
+
+      
+   //
+   // Jokainen käsky on jaettuna kolmeen osaan
+   //
+   
+   komennot = [];
+   for( var i=0 ; i<bin.length ; i=i+4){
+      komento=parseInt(bin.slice(i,i+4),2);
+      
+      komento = muuntotaulukko_to_command(komento);
+            
+      if(komento == "nop"){
+         komennot.push("nop");
+      }   
+      else {
+         komennot.push(komento + " " + 
+                    numero_nelitavuiseksi(parseInt(bin.slice(i+4,i+8),2)) + " " + 
+                    numero_nelitavuiseksi(parseInt(bin.slice(i+8,i+12),2)) );
+         i=i+8;
+      }
+   }
+  
+
+   // Tulos ulos ja näkyviin   
+   var tulos =[];
+   var indeksi = 0;
+   for( i = 0 ; i<komennot.length ; i++){
+       if(komennot[i] != "nop"){
+          indeksi=indeksi+2;
+       }
+       
+       //tulos.push( numero_nelitavuiseksi(indeksi) +": " + komennot[i]);
+       tulos.push(  komennot[i]);
+       indeksi=indeksi+1;
+   }
+   document.getElementById("disasm").innerHTML=tulos.join("\n");
+   //komennot.join("\n");
+   
+}
+
+
+
+///////////// Apufunktiot
+
+
+function onko_jonossa_arvoa(jono, arvo){
+   return jono.indexOf(arvo) > -1;
+}
+function numero_nelitavuiseksi(luku){
+
+   var nelitavu = "";
+   
+   nelitavu = nelitavu + luku%2;
+   luku=luku>>1;
+   nelitavu = nelitavu + luku%2;
+   luku=luku>>1;   
+   nelitavu = nelitavu + luku%2;
+   luku=luku>>1;   
+   nelitavu = nelitavu + luku%2;
+   return nelitavu.split('').reverse().join('');
+}
+
+function muuntotaulukko(i){
+   if      ( i == "nop") { return 0;  }
+   else if ( i == "jmp") { return 1;  }
+   else if ( i == "get") { return 2;  }
+   else if ( i == "put") { return 3;  }
+                      
+   else if ( i == "ldr") { return 4;  }
+   else if ( i == "crr") { return 5;  }
+   else if ( i == "and") { return 6;  }
+   else if ( i == "lor") { return 7;  }
+                      
+   else if ( i == "not") { return 8;  }
+   else if ( i == "xor") { return 9;  }
+   else if ( i == "lsh") { return 10; }
+   else if ( i == "rsh") { return 11; }
+                      
+   else if ( i == "add") { return 12; }
+   else if ( i == "neg") { return 13; }
+   else if ( i == "beq") { return 14; }
+   else if ( i == "bne") { return 15; }
+   
+   else
+      alert("Illegal command: " + i );
+}
+
+function muuntotaulukko_to_command(i){
+   var instruction_set = [ "nop","jmp","get","put",   
+                           "ldr","crr","and","or ",
+                           "not","xor","lsh","rsh",
+                           "add","neg","beq","bne" ];
+   return instruction_set[i];
+   
+ }
+
+
+</script>
+</html>
+
+
+
