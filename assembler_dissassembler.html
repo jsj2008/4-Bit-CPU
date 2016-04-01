@@ -142,23 +142,23 @@ Flags
                            Parameters 
 Binary       command       1         2                  Explanation                                          Memory without code</b>, d=don't care
 0000         nop           -         -                  No operation                                             
-0001         jmp  p  i     page      instruction        Jump to page p, instruction i                        i    Page 0                               i     Every other page    
-0010         get  p  i     page      instruction        Register r0 = memory page p instruction i            0    dddd    program counter              0     0000      Programmable code starts here on page 1 
-0011         put  p  i     page      instruction        memory page p instruction i = r0                     1    dddd    flags                        1     0000       
-                                                                                                             2    1111    DDR for pins  0-3            2     0000           
-0100         ldr  r  v     register  value              Load value v in any register r                       3    1111    DDR for pins  4-7            3     0000       
-0101         crr  r  r'    register  register           register r = r' s value                              4    1111    DDR for pins  8-11           4     0000       
-0110         and  r  r'    register  register           r0  = r  and r'                                      5    dddd    I/O for pins  0-3            5     0000       
-0111         lor  r  r'    register  register           r0  = r  logical or r'                               6    dddd    I/O for pins  4-7            6     0000       
-                                                                                                             7    dddd    I/O for pins  8-11           7     0000       
-1000         not  r  r'    register  register           r' =  not r                                          8    0000    r0    output of logic        8     0000       
-1001         xor  r  r'    register  register           r0  = r  xor r'                                      9    0000    r1      r1-r6                9     0000       
-1010         lsh  r  v     register  value              r0 = r &lt;&lt; v                                          a    0000    r2       are                 a     0000       
-1011         rsh  r  v     register  value              r0 = r &gt;&gt; v                                          b    0000    r3      general              b     0000       
-                                                                                                             c    0000    r4      purpose              c     0000       
-1100         add  r  r'    register  register           r0 = r + r'                                          d    0000    r5     registers             d     0000       
-1101         neg  r  r'    register  register           if r'=1010 =&gt; r=0101                                 e    0000    r6                           e     0000       
-1110         beq  p  i     page      instruction        If zero flag =&gt; jmp p,i                              f    0000      empty, but editable        f     0000       
+0001         jmp  p  i     page      instruction        Jump to page p, instruction i                  i    Page 0                             i     Every other page    
+0010         get  p  i     page      instruction        Register r0 = memory page p instruction i      0    dddd    program counter 0          0     0000      Programmable code starts here on page 1 
+0011         put  p  i     page      instruction        memory page p instruction i = r0               1    dddd    program counter 1          1     0000       
+                                                                                                       2    dddd    flags                      2     0000           
+0100         ldr  r  v     register  value              Load value v in any register r                 3    1111    DDR for pins  0-3          3     0000       
+0101         crr  r  r'    register  register           register r = r' s value                        4    1111    DDR for pins  4-7          4     0000       
+0110         and  r  r'    register  register           r0  = r  and r'                                5    1111    DDR for pins  8-11         5     0000       
+0111         lor  r  r'    register  register           r0  = r  logical or r'                         6    dddd    I/O for pins  0-3          6     0000       
+                                                                                                       7    dddd    I/O for pins  4-7          7     0000       
+1000         not  r  r'    register  register           r' =  not r                                    8    dddd    I/O for pins  8-11         8     0000       
+1001         xor  r  r'    register  register           r0  = r  xor r'                                9    0000    r0    output of logic      9     0000       
+1010         lsh  r  v     register  value              r0 = r &lt;&lt; v                                    a    0000    r1      r1-r4              a     0000       
+1011         rsh  r  v     register  value              r0 = r &gt;&gt; v                                    b    0000    r2       are               b     0000       
+                                                                                                       c    0000    r3      general            c     0000       
+1100         add  r  r'    register  register           r0 = r + r'                                    d    0000    r4      purpose            d     0000       
+1101         neg  r  r'    register  register           if r'=1010 =&gt; r=0101                           e    0000     interrupt-                e     0000       
+1110         beq  p  i     page      instruction        If zero flag =&gt; jmp p,i                        f    0000    handler bits               f     0000       
 1111         bne  p  i     page      instruction        If !zero flag =&gt; jmp p,i                      
                                                                                                            
                                                                                                       
@@ -198,21 +198,21 @@ bne 0010 1111        Branch if Not Equal, if zero flag =0 , jmp 0010 1111
 
 function assemble(){
    
-   // hae assembly
+   // Get the code on textbox
    var assy=document.getElementById("koodi").value;   
 
-   // kaikki merkit pieniksi
+   // Lowercase everything
    assy = assy.toLowerCase();
 
-   // Jokainen rivi on oma elementtinsä
+   // Every line is it's own element
    assy = assy.split("\n");
    
-   // Whitespace pois
+   // Whitespace away
    for( i=0 ; i<assy.length ; i++){
       assy[i] = assy[i].trim();      
    }
    
-   // Poistetaan vielä tyhjät ja äskön tyhjentyneet rivit
+   // Remove all empty elements or those we just emptied
    for ( i = assy.length-1 ; i >= 0; i--) {
       if( assy[i][0] == "*" ){
          assy.splice(i,1);
@@ -223,19 +223,20 @@ function assemble(){
       }
    }
 
-   // Labelien rivinumerot ja nimet
+   // Linenumbers and names for labels
    var label_line = [];
    var label_name = []; 
    
-   // Löydä label:it ja anna niille rivinumerot, labelin viimeinen merkki on :
+   // Find labels and give them linenumbers.
+   // Last symbol of label is ':'
    for( i=0 ; i<assy.length ; i++){
       if( assy[i][assy[i].length-1] == ":"){
          label_line.push(i);
-         label_name.push((assy[i]).slice(0,-1)); // ei haluta "4:" mukaan
+         label_name.push((assy[i]).slice(0,-1));
       }
    }
   
-   // labelien takia tarvitaan osoitekartta
+   // Map for labels
    var osoitteet = [ 0 ];
    var osoiteindeksi = 0;
    for(i=0 ; i< assy.length ; i++){
@@ -253,48 +254,49 @@ function assemble(){
          osoitteet.push(osoiteindeksi);
       }
    }
-   // off by one virhe
+   // off by one, don't know any better way
    osoitteet.pop();
 
    
-   // Kehitetään labelien lopulliset osoitteet
+   // Final addresses for labels
    var labels_bin = [];
 
    for ( i =0 ; i<label_line.length ; i++ ){
-      // sivu saadaan näemmä kaavalla. (arvo - arvo%16) / 16) . Bruteforcetetaan yhtälöitä =)
+      // After long bruteforce, page seems 
+      // to follow formula. (arvo - arvo%16) / 16) 
       var sivu = ((osoitteet[label_line[i]-i] - (osoitteet[label_line[i]-i] %16))/16);
       var indeksi =  osoitteet[label_line[i]-i] - sivu*16 ;
-      // Ja nollas sivu on järjestelmälle, oikeasti siis tarvitaan +1
+      // Zero-page is for system, so add 1 to all
       sivu = parseInt(sivu) + 1;
       labels_bin.push( sivu + " " + indeksi );
    } 
 
-   // Labelit pois
+   // Parse labels away
    for( i=(assy.length-1) ; i>=0 ; i--){
       if( onko_jonossa_arvoa(label_line , i) )
          assy.splice(i,1);         
    }  
        
-   // Käydään kaikki läpi, erotellaan välilyönnein. 
+   // Check everyone, split them with spaces
    var assy_apu = [];
    var apu ="";
    for( i=0 ; i<assy.length ; i++){
       apu = assy[i].split(" ");
 
-      // Jos lukuja on 1 => nop
+      // if there's only 1 term => nop
       if( apu.length == 1){
          assy_apu.push("0000");
       }
       
-      // jos lukuja 2 => label
+      // if 2 => label
       else if( apu.length == 2){
           //assy_apu.push(apu[0]);
           assy_apu.push( numero_nelitavuiseksi(muuntotaulukko(apu[0])));
           for( j=0 ; j<label_name.length ; j++){
           
-             // jos jälkimmäinen osio löytyy label-luettelosta
+             // if the other is found in label-list
              if( label_name[j] == apu[1]) {
-                // laita assy_apun sivuksi tämän sivu
+                // put page for assy_apu this page
                 assy_apu.push( (numero_nelitavuiseksi( ( ( labels_bin[j].split(" ")[0] ) ))));            
                 assy_apu.push( (numero_nelitavuiseksi(labels_bin[j].split(" ")[1] )));
                 //assy_apu.push( (numero_nelitavuiseksi(rivien_summa[j])));
@@ -329,11 +331,11 @@ function dissassebler(){
       bin = document.getElementById("koodi").value;   
    }
 
-   // Poistetaan whitespace
+   // Get rid of whitespace
    bin = bin.replace( /\s+/g, "");
 
    var alerted = 0;
-   // Binäärissä saa olla vain 1 ja 0
+   // Binary should be only 0 or 1
    for( var i=0 ; i<bin.length ; i++){
       if( ( bin[i] != "1" ) && ( bin[i] != "0") ){
          if( alerted == 0){
@@ -345,7 +347,7 @@ function dissassebler(){
 
       
    //
-   // Jokainen käsky on jaettuna kolmeen osaan
+   // Every command has 3 parts
    //
    
    komennot = [];
@@ -366,7 +368,7 @@ function dissassebler(){
    }
   
 
-   // Tulos ulos ja näkyviin   
+   // Show the result
    var tulos =[];
    var indeksi = 0;
    for( i = 0 ; i<komennot.length ; i++){
@@ -385,7 +387,7 @@ function dissassebler(){
 
 
 
-///////////// Apufunktiot
+///////////// Helper functions
 
 
 function onko_jonossa_arvoa(jono, arvo){
