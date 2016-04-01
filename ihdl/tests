@@ -1,0 +1,182 @@
+So, let's copypaste the whole hdl.js to firefoxes js-console (ctrl-shift-c -> console)
+
+
+// Test the NOT gate
+a = true
+not(a) // false
+a = false 
+not(a)  // true
+// Not gate works as should be
+
+// Test xor and nand
+a = b = false // tulisi olla false
+nand( nand( a, nand( a, b ) ) , nand( b, nand( a, b ) )); // false
+
+a = false
+b = true
+nand( nand( a, nand( a, b ) ) , nand( b, nand( a, b ) )); // true
+
+a = true 
+b = false
+nand( nand( a, nand( a, b ) ) , nand( b, nand( a, b ) )); // true
+
+a = b = true
+nand( nand( a, nand( a, b ) ) , nand( b, nand( a, b ) )); // false
+//  Ok, so nand and xor is working.
+
+// next in line, AND
+a=b=false
+and(a,b)    false
+a = false
+b = true 
+and( a,b)    false
+a = true
+b = false
+and(a,b)     false
+a = b = true
+and (a,b)    true
+// AND works
+
+
+// OR 
+a=b=false
+or(a,b) //   false
+a = false
+b = true 
+or( a,b)   // true
+a = true
+b = false
+or(a,b)   //  true
+a = b = true
+or(a,b) //   true
+// Or works
+
+// Half-adder
+a = b = false 
+half_adder(a,b)   // 0+0 = false
+global_flag_carry // false
+a = false
+b = true
+half_adder(a,b)   // 0+1 = 1 = true
+global_flag_carry // false
+a = true
+b = false
+half_adder(a,b)   // 1+0 = 1 = true
+global_flag_carry // false
+a = b = true
+half_adder(a,b)   // 1+1 = 10 = false
+global_flag_carry  // true
+
+
+
+
+
+// Full adder
+a b c   out c
+0 0 0    0  0 ok
+0 1 0    1  0 ok
+1 0 0    1  0 ok  
+1 1 0    0  1 ok
+0 0 1    1  0
+0 1 1    0  1
+1 0 1    0  1
+1 1 1    1  1
+
+a = b =  global_flag_carry = false
+full_adder(a,b)  // false 
+global_flag_carry // false
+ok
+
+a = false
+b = true
+global_flag_carry = false
+full_adder(a,b)  // true 
+global_flag_carry // false
+ok
+
+a = true
+b = false
+global_flag_carry = false
+full_adder(a,b)  // true 
+global_flag_carry // false
+
+a = true
+b = true
+global_flag_carry = false
+full_adder(a,b)    // false 
+global_flag_carry  // true
+
+0 0 1    1  0
+0 1 1    0  1
+1 0 1    0  1
+1 1 1    1  1
+
+a = false
+b = false
+global_flag_carry = true
+full_adder(a,b)    // true 
+global_flag_carry  // false
+
+
+a = false
+b = true
+global_flag_carry = true
+full_adder(a,b)    // false 
+global_flag_carry  // true
+
+
+
+a = true
+b = false
+global_flag_carry = true
+full_adder(a,b)    // false 
+global_flag_carry  // true
+
+
+a = true
+b = true
+global_flag_carry = true
+full_adder(a,b)    // true
+global_flag_carry  // true
+
+So, now we can add?
+     1  1 1 
+   1001 0101
++  0101 0101  
+--------------
+   1110 1010
+   
+global_flag_carry = false;
+full_adder(1,1) // false
+full_adder(0,0) // true
+full_adder(1,1) // false
+full_adder(0,0) // true
+
+full_adder(1,1) // false
+full_adder(0,0) // true
+full_adder(0,1) // true
+full_adder(1,0) // true
+
+>> global_flag_carry  // true
+true
+>> global_flag_carry = false;
+false
+>> full_adder(1,1) // false
+false
+>> full_adder(0,0) // true
+true
+>> full_adder(1,1) // false
+false
+>> full_adder(0,0) // true
+true
+>> full_adder(1,1) // false
+false
+>> full_adder(0,0) // true
+true
+>> full_adder(0,1) // true
+true
+>> full_adder(1,0) // true
+true
+
+Awesome.
+// Full adder works
