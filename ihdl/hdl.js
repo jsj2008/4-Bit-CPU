@@ -316,7 +316,3 @@ function full_adder(a,b){
    return tmp_out2;
   
 }
-
-function four_bit_full_adder(a,b){
-   
-}

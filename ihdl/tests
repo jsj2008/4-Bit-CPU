@@ -180,3 +180,146 @@ true
 
 Awesome.
 // Full adder works
+
+
+// Test the eight bit full adder
+   console.log(global_program_counter + "  0000 0001");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false, false,false,false,true]);   
+   console.log(global_program_counter + "0000 0010");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false, false,false,true,false]);   
+
+   console.log(global_program_counter + "  0000 0100");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false, false,true,false,false]);         
+   console.log(global_program_counter + "0010 0000");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,true,false,  false,false,false,false]);         
+
+   console.log(global_program_counter + "  0100 0000");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,true,false,false,  false,false,false,false]);         
+   console.log(global_program_counter + "  1000 0000");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[true,false,false,false,   false,false,false,false]);         
+   
+   console.log(global_program_counter + " Lopullinen");  
+   // oh yeah, if someone is reading these, "Lopullinen" means just "Final"
+   // as in final result = lopullinen ratkaisu
+
+false,false,false,false, false,false,false,false      0000 0001
+false,false,false,false, false,false,false,true       0000 0010
+false,false,false,false, false,false,true,true        0000 0100
+false,false,false,false, false,true,true,true         0010 0000
+false,false,true ,false, false,true,true,true         0100 0000
+false,true ,true ,false, false,true,true,true         1000 0000
+true,true,true,false,false,true,true,true Lopullinen
+11100111
+
+0000 0001
+0000 0010
+0000 0100
+0010 0000
+0100 0000
+1000 0000+
+***********
+1110 0111 ok
+
+
+
+   console.log(global_program_counter + "  1111 1111");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[true, true, true, true,  true, true, true, true]);         
+   console.log(global_program_counter + "  0000 0001");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false,   false,false,false,true]);         
+   console.log(global_program_counter + " Lopullinen");
+false,false,false,false,false,false,false,false  1111 1111 index.html:22:4
+true,true,true,true,true,true,true,true  0000 0001 index.html:24:4
+true,true,true,true,true,true,true,false Lopullinen index.html:26:4 
+
+Nooo!  FF + 01 = FE ?
+
+
+   console.log(global_program_counter + " + FF");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,hex_F.concat(hex_F));         
+   console.log(global_program_counter + " + 01");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,hex_0.concat(hex_1));         
+   console.log(global_program_counter + " Lopullinen");   
+
+false,false,false,false,false,false,false,false + FF index.html:44:4
+true,true,true,true,true,true,true,true  1 index.html:46:4
+true,true,true,true,true,true,true,false Lopullinen index.html:48:4
+
+// yep, FF+01=FE, so my adder has bug.
+
+
+full_adder(0,0)
+true
+full_adder(0,1)
+true
+full_adder(1,0)
+true
+full_adder(1,1)
+false
+
+
+( 1111 111 )
+  1111 1111
+  0000 0001 +
+1 0000 0000
+
+global_flag_carry = false;
+console.log(full_adder(1,1));
+console.log(full_adder(1,0));
+console.log(full_adder(1,0));
+console.log(full_adder(1,0));
+console.log(full_adder(1,0));
+console.log(full_adder(1,0));
+console.log(full_adder(1,0));
+console.log(full_adder(1,0));
+
+// Ooooh, ok, 8 bit adder need's to clear carry to work properly... 
+// It shouldn't do that, maby half adder for first?
+
+false,false,false,false,false,false,false,false + FF index.html:42:4
+true,true,true,true,true,true,true,true + 01 index.html:44:4
+false,false,false,false,false,false,false,false <--- This should be 0000 0000 index.html:46:4
+
+// Awesome! Now the test again...   
+   console.log(global_program_counter + "  0000 0001");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false, false,false,false,true]);   
+   console.log(global_program_counter + "0000 0010");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false, false,false,true,false]);   
+
+   console.log(global_program_counter + "  0000 0100");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,false,false, false,true,false,false]);         
+   console.log(global_program_counter + "0010 0000");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,false,true,false,  false,false,false,false]);         
+
+   console.log(global_program_counter + "  0100 0000");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[false,true,false,false,  false,false,false,false]);         
+   console.log(global_program_counter + "  1000 0000");
+   global_program_counter =  eight_bit_full_adder(global_program_counter,[true,false,false,false,   false,false,false,false]);         
+   
+   console.log(global_program_counter + " <-- should be 1110 0111");  
+   
+
+false,false,false,false,false,false,false,false    0000 0001 index.html:43:4
+true,false,false,false,false,false,false,false     0000 0010 index.html:45:4
+false,true,false,false,false,false,false,true      0000 0100 index.html:48:4
+true,false,true,false,false,false,true,false       0010 0000 index.html:50:4
+false,true,false,false,false,false,true,true       0100 0000 index.html:53:4
+true,true,false,false,false,false,false,true       1000 0000 index.html:55:4
+true,false,false,false,false,false,true,false Lopullinen index.html:58:4
+
+
+/*
+Found the bug at last! 
+
+I have thought my bytes as   msb 6 5 4 3 2 1 lsb 
+but I have used them on js as 0  1 2 3 4 5 6 7
+
+On adders the direction is important, so I need to 
+reverse the the orfer, but then I need to use .reverse() 
+to fix that wrong order.
+
+Now finally that bug is smashed.... For now.
+
+So, ALU has now nop working, and addition is not yet tested.
+
+*/
+

@@ -25,18 +25,18 @@
 //
 //
 
-// We need program counter
-var global_program_counter_0 = [false,false,false,false];
-var global_program_counter_1 = [false,false,false,false];
 
-// and we need to increment it when nop is called.
+
 function alu_nop(){
-   // oh, we cannot do just
-   // global_program_counter +=1;
-   // so we need 4-bit full adder
+   increment_program_counter();
 }
 
 
+function alu_add(a,b){
+   register_r0 = four_bit_full_adder( a,b);
+}
+
+/*
     
 i    Page 0                               i     Every other page    
 0    dddd    program counter 0            0     0000                   Programmable code starts here on page 1 
@@ -56,3 +56,4 @@ d    0000    r4      purpose              d     0000
 e    0000     interrupt-                  e     0000       
 f    0000    handler bits                 f     0000       
                                                  
+*/
