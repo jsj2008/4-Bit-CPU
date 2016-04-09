@@ -204,7 +204,7 @@ function xor(a,b){
 //  historically called Carry, so let's
 //  make our first global flag.
 //
-var global_flag_carry = 0;
+// var global_flag_carry = 0; This is now in registers.js
 //
 //  This lives in something called 
 //  register, we'll come to that

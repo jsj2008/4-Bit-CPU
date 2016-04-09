@@ -323,3 +323,74 @@ So, ALU has now nop working, and addition is not yet tested.
 
 */
 
+//
+//  Removed 8-bit add-operation. Let's check....
+//
+global_program_counter
+increment_program_counter()
+global_program_counter // oh yea, I need to assign it back...
+
+// how the ... did JS arrays work again..
+var testi= { 1, 2,3,4}
+var testi= [1, 2,3,4]
+testi = [testi[0] , testi[1], testi[2], testi[3]]   // Array [ 1, 2, 3, 4 ]
+function swap(a,b){ return [b,a] ; }
+// in my mind this could work...
+testi = [swap( testi[0], testi[1] ), testi[2], testi[3] ]
+// oh ok, It makes 2-dimensional table.. Now it get's ugly
+testi = [swap( testi[0], testi[1] )[0],
+         swap( testi[0], testi[1] )[1], 
+         testi[2]      , testi[3]      ] // it did work? Omg.
+         
+// Now this is wierd
+pc     // 0000 0000
+inc pc 
+pc     // 0000 0001
+inc pc
+pc     // 0000 0001
+
+a = [ 0, 1, 0, 1]   // 5 + 6 = 11 , +1 = 12 ok.
+b = [ 0, 1, 1, 0]
+four_bit_full_adder(a,b)
+four_bit_full_adder(four_bit_full_adder(a,b),[0,0,0,1])
+
+global_flag_carry = 0
+four_bit_full_adder_with_carry(a,b)
+global_flag_carry = 0
+four_bit_full_adder_with_carry([1,0,1,1],[0,0,0,1])
+
+// arithmetics do work, so bug is in assignment
+
+// Ohh, I was not thinking..
+four_bit_full_adder( [0,0,0,1] , [global_program_counter[4] , global_program_counter[5], global_program_counter[6] , global_program_counter[7]])[3];
+
+// Now increment works, 0-> 1 -> 2 -> 3... f -> 10 AWESOME!
+// and after x10 11
+// So next edge case is 1F -> 20. Nope, 1f+1 = 0. 
+global_program_counter = [ 0,0,0,1, 1,1,1,1]
+increment_program_counter() // 0000 0000
+// did the 1111 really become 10000
+global_program_counter = [ 0,0,0,0, 1,1,1,1] // 1 0000, yes it did.
+
+// So many stupid mistakes.
+global_program_counter = [ 0,0,0,0, 1,1,1,1]
+increment_program_counter()
+global_program_counter = [ 0,0,0,1, 1,1,1,1]
+global_program_counter = [ 0,0,1,1, 1,1,1,1]
+global_program_counter = [ 0,1,1,1, 1,1,1,1]
+global_program_counter = [ 1,1,1,1, 1,1,1,1]
+
+
+or(
+   and(
+      full_adder(a[3] , b[3]), global_flag_add_with_carry
+   )
+   , // or
+   and(
+      half_adder(a[3] , b[3]), not(global_flag_add_with_carry)
+   )
+)
+A=1 => full adder 
+A=0 => not(A) =1 => half_adder
+
+
