@@ -14,22 +14,15 @@ function four_bit_full_adder(a,b){
 //             ].reverse();
 
    // half, full, full, full => a=0
-   global_flag_add_with_carry = false; // a=0
+   set_flag('a', false);
    return four_bit_add(a,b); // half , full, full, full
-
-
 }
 
-// Copypaste upper function. Same we'd do with schematics anyway...
 function four_bit_full_adder_with_carry(a,b){
-   global_flag_add_with_carry = true;
-   return four_bit_add(a,b);
-
-//   return    [ full_adder(a[3] , b[3]) ,  // only difference is this full adder
-//               full_adder(a[2] , b[2]) , 
-//               full_adder(a[1] , b[1]) , 
-//               full_adder(a[0] , b[0])  
-//             ].reverse();
+   set_flag('a',true);
+   var tmp = four_bit_add(a,b);
+   set_flag('a',false);
+   return tmp;
 }
 
 // so these two upper ones should really be one function. 
@@ -41,8 +34,8 @@ function four_bit_full_adder_with_carry(a,b){
 // Oh btw, that looks lot like 2-bit demux.. Wonder why ;)
 // mask the one we want with and 1 and other one to 0 with and 0
 function four_bit_add(a,b){
-   return    [ or(and(full_adder(a[3] , b[3]),     global_flag_add_with_carry),
-                  and(half_adder(a[3] , b[3]), not(global_flag_add_with_carry))),
+   return    [ or(and(full_adder(a[3] , b[3]),     get_flag('c')),
+                  and(half_adder(a[3] , b[3]), not(get_flag('c')))),
                full_adder(a[2] , b[2]) , 
                full_adder(a[1] , b[1]) , 
                full_adder(a[0] , b[0])  

@@ -27,33 +27,47 @@
 
 
 
+
+// Working
 function alu_nop(){
    increment_program_counter();
 }
 
-
-function alu_add(a,b){
-   register_r0 = four_bit_full_adder( a,b);
+function alu_jmp(addr){
+   // set_memory(addr,value)
+   set_memory( 0 , [ addr[0], addr[1], addr[2] , addr[3] ]);   
+   set_memory( 1 , [ addr[4], addr[5], addr[6] , addr[7] ]);   
 }
 
-/*
-    
-i    Page 0                               i     Every other page    
-0    dddd    program counter 0            0     0000                   Programmable code starts here on page 1 
-1    dddd    program counter 1            1     0000      
-2    dddd    flags                        2     0000
-3    1111    DDR for pins  0-3            3     0000           
-4    1111    DDR for pins  4-7            4     0000       
-5    1111    DDR for pins  8-11           5     0000       
-6    dddd    I/O for pins  0-3            6     0000       
-7    dddd    I/O for pins  4-7            7     0000       
-8    dddd    I/O for pins  8-11           8     0000       
-9    0000    r0    output of logic        9     0000       
-a    0000    r1      r1-r4                a     0000       
-b    0000    r2       are                 b     0000       
-c    0000    r3      general              c     0000       
-d    0000    r4      purpose              d     0000       
-e    0000     interrupt-                  e     0000       
-f    0000    handler bits                 f     0000       
-                                                 
-*/
+function alu_add(a,b){
+   //register_r0 = four_bit_full_adder( a,b);
+   set_memory( r0_addr , four_bit_full_adder( a,b) );
+}
+
+// Not yet working
+
+// get 0000 0101        GET value of to r0, r0 = value of 0000 0101  ( r0 =  I/O 0-3 )
+
+
+//function alu_get( ){ 
+//   register_r0 =    
+//}
+
+// put 0000 0010        PUT value of r0 to, r0's value is copied to 0000 0010 ( DDR 0-3 )
+
+
+
+function increment_program_counter(){
+   var mem_h = get_memory( 0); 
+   var mem_l = get_memory( 1);  
+   
+   console.log(mem_h + "   " + mem_l );
+   
+   mem_l = four_bit_full_adder(mem_l, [0,0,0,1]);
+   mem_h = four_bit_full_adder_with_carry(mem_h, [0,0,0,0]);
+
+   console.log(mem_h + "   " + mem_l );
+
+   set_memory(0,mem_h);
+   set_memory(1,mem_l);
+}

@@ -134,6 +134,11 @@ function or( a, b ){
    return nand( not( a ) , not( b ) );
 }
 
+// Nor is needed at memory/RS flipflop
+function nor(a,b){
+   return not(or(a,b));
+}
+
 // Oh, it seems full-adder needs some mystical star-ball-function
 // called XOR.
 //        ___ 
@@ -214,7 +219,8 @@ function xor(a,b){
 //  it is needed only when both are 1,
 //  otherwise it stays 0.. So and?
 function half_adder(a,b){
-   global_flag_carry = and( a , b);
+   //global_flag_carry = and( a , b);
+   set_flag('c' , and(a,b) );
    return xor( a , b );   
 }
 
@@ -298,19 +304,22 @@ function full_adder(a,b){
 
    // we need to ad a+b+carry, but then carry would change.
    // let's store the carry
-   var tmp_carry = global_flag_carry;
+   //var tmp_carry = global_flag_carry;
+   var tmp_carry = get_flag('c');
    
    // Now we can add a and b
    var tmp_out = half_adder(a,b);
    
    // but hey, we need this carry too 
-   var tmp_carry_2 = global_flag_carry;
+   //var tmp_carry_2 = global_flag_carry;
+   var tmp_carry_2 = get_flag('c');
    
    // first carry and a+b is final output
    var tmp_out2 = half_adder( tmp_out, tmp_carry);
    
    // but before returning, we need to edit carry
-   global_flag_carry = or( tmp_carry_2 , global_flag_carry);
+   //global_flag_carry = or( tmp_carry_2 , global_flag_carry);
+   set_flag('c' , or( tmp_carry_2 , get_flag('c')) );
    
    // Now that was ugly.
    return tmp_out2;
