@@ -22,6 +22,12 @@ var memory = [
             ];
 
 
+function memory_address( page,addr){
+   return +_to_dec(page)*16 + +_to_dec(addr);   
+}
+
+
+
 // If the memory changes, just change these
 var flag_addr = 2;
 var r0_addr = 9;

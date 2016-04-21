@@ -518,3 +518,99 @@ increment_program_counter() // Ok
 // So error was again the way javascript is not parallel as hardware.
 // It's hard to get it right ;)
 
+//////////////////////
+
+// line 520. When we hit 1000 it's time to move to new file.
+
+// So. is as in instruction set, is_put to test.
+set_memory(r0_addr, [0,1,0,1])
+is_put( [0,0,0,0], [ 1,1,0,0] );
+is_put( [0,0,0,0], [ 1,1,0,1] );
+is_put( [0,0,0,0], [ 1,1,1,0] );
+is_put( [0,0,0,0], [ 1,1,1,1] );
+
+
+// "Antenne bayern 80er Kulthits", nice station =D
+
+//value error... is_put
+set_memory( get_memory[ memory_address([0,0,0,0],[1,1,0,0])], r0_addr);
+
+memory_address([0,0,0,0],[1,1,0,0])
+"NaN1,1,0,0"
+// Goddamit batman, go away. Oh! I try to multiply array of bools, 
+// Sorry javascript! I didn't mean it =(
+// This needs converter functions. Let's copy them from other repo, I made
+// them somehow before.
+
+_to_dec([1,1,1,1])  
+_to_bin(_to_dec([1,1,1,1])) // every value works, awesome
+
+// Awesome, that I didn't have to think the logic again. Thanks me from the past!
+
+
+_to_dec([0,0,0,0])*16+ _to_dec([0,1,0,1]);   
+
+// Back from debugging to testing.
+
+memory_address([0,0,0,0],[1,1,0,0]) 
+"0,0,0,01,1,0,0" //  sooo... what? Oh yeah, javascript don't like the plus.
+// a+b is +a + +b in javascript, ofcourse x)
+
+memory_address([1,1,1,1],[1,1,1,1])  // 0-255 ok.
+
+get_memory( memory_address([0,0,0,0],[1,1,0,0]))
+
+////
+
+addr1 = [0,0,0,0]
+addr2 = [1,1,0,0]
+set_memory( _to_dec(get_memory( memory_address(addr1,addr2))) , get_memory(r0_addr));
+_to_dec(get_memory( memory_address(addr1,addr2)))
+get_memory( memory_address(addr1,addr2)) // [ false, fals...] ok.
+memory_address(addr1,addr2) // 12 ok
+
+// Ok, let's step back. 
+// Put r0 to address. set_memory(addr, value). Value is 
+set_memory(memory_address(addr1,addr2)[0] , get_memory(r0_addr)[0])
+memory_address(addr1,addr2)[1] = get_memory(r0_addr)[1]
+memory_address(addr1,addr2)[2] = get_memory(r0_addr)[2]
+memory_address(addr1,addr2)[3] = get_memory(r0_addr)[3]
+
+// so like
+set_memory(memory_address(addr1,addr2) , get_memory(r0_addr))
+
+set_memory(r0_addr, [0,1,0,1])
+is_put( [0,0,0,0], [ 1,1,0,0] );
+is_put( [0,0,0,0], [ 1,1,0,1] );
+is_put( [0,0,0,0], [ 1,1,1,0] );
+is_put( [0,0,0,0], [ 1,1,1,1] );
+
+// Put works.
+// Get.
+
+// memory(5) = 8+2 = 10 (= a)
+get_memory(r0_addr)
+set_memory([0,1,0,1] , [1,0,1,0])
+is_get([0,0,0,0], [0,1,0,1]) // page 0 place 5
+get_memory(r0_addr)
+
+addr1 = [0,0,0,0]
+addr2 = [0,1,0,1]
+set_memory( r0_addr  , get_memory( memory_address(addr1,addr2)) );
+set_memory(     9    , 
+
+//get tests
+
+get_memory(r0_addr)
+
+set_memory( 5 , [0,1,1,0])
+is_get([0,0,0,0],[0,1,0,1])  
+get_memory(r0_addr)  // r0 = 0110, ok!
+
+set_memory( 6 , [0,1,1,1])
+is_get([0,0,0,0],[0,1,1,0])
+get_memory(r0_addr) // r0 = 0111
+
+set_memory( 7 , [1,0,0,0])
+is_get([0,0,0,0],[0,1,1,1])
+get_memory(r0_addr) // r0 = 1000 ok, get works.
