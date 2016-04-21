@@ -1,43 +1,40 @@
 //
-// Yeah, let's make new file for the multibits. Too messy.
+// Let's make new file for the multibits.
+//
 
 
 function four_bit_full_adder(a,b){
    
-//   // Oh yea, LSB is index 3 and needs to
-//   // be counted first, but on JS my
-//   // list is wrong way, so reverse and reverse
-//   return    [ half_adder(a[3] , b[3]) , 
-//               full_adder(a[2] , b[2]) , 
-//               full_adder(a[1] , b[1]) , 
-//               full_adder(a[0] , b[0])  
-//             ].reverse();
+   // LSB is either half or full adder based on 'a' flag
+   //
+   // or( and( A, full_adder) , and( !A, half adder) )
+   // mask the one we want with 'and 1' and other one to 0 with 'and 0'
 
-   // half, full, full, full => a=0
-   set_flag('a', false);
-   return four_bit_add(a,b); // half , full, full, full
-}
+   // Store flags, full and half adder should happen same time, so
+   // flags should not change
+   var tmpa = get_flag('a')
+   var tmpc = get_flag('c')
+   
+   var tmp_fa = full_adder(a[3] , b[3]);
+   set_flag('a',tmpa);
+   var tmpc2 = get_flag('c')
+   set_flag('c',tmpc);
 
-function four_bit_full_adder_with_carry(a,b){
-   set_flag('a',true);
-   var tmp = four_bit_add(a,b);
+   var tmp_ha = half_adder(a[3] , b[3]);
    set_flag('a',false);
-   return tmp;
-}
+   var tmpc3 = get_flag('c')   
 
-// so these two upper ones should really be one function. 
-// In hardware (that is just in my mind yet...) there
-// is new flag, add-flag or add_with_carry flag.. A-flag.
-// if A => four_bit_with_carry, else four_bit
-// Oooh, maby it works like..
-// or( and( A, full_adder) , and( !A, half adder) )
-// Oh btw, that looks lot like 2-bit demux.. Wonder why ;)
-// mask the one we want with and 1 and other one to 0 with and 0
-function four_bit_add(a,b){
-   return    [ or(and(full_adder(a[3] , b[3]),     get_flag('c')),
-                  and(half_adder(a[3] , b[3]), not(get_flag('c')))),
-               full_adder(a[2] , b[2]) , 
-               full_adder(a[1] , b[1]) , 
-               full_adder(a[0] , b[0])  
-             ].reverse();
+   // Carry needs to have same logic
+   set_flag('c', or( and(tmpa, tmpc2) , and( not(tmpa), tmpc3)));
+
+   var out =  [ or( and(tmp_fa ,     tmpa),
+                    and(tmp_ha , not(tmpa))),
+                full_adder(a[2] , b[2]) , 
+                full_adder(a[1] , b[1]) , 
+                full_adder(a[0] , b[0])  
+              ];
+
+   
+   return out.reverse();
+   
 }

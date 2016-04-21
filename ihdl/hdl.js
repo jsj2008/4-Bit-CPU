@@ -303,25 +303,24 @@ function full_adder(a,b){
    // way to do this without tmp's, please contact me and tell me how!
 
    // we need to ad a+b+carry, but then carry would change.
-   // let's store the carry
-   //var tmp_carry = global_flag_carry;
-   var tmp_carry = get_flag('c');
+   // let's store the incoming carry
+   var tmp_carry_in = get_flag('c');
    
    // Now we can add a and b
-   var tmp_out = half_adder(a,b);
+   var tmp_first_add = half_adder(a,b);
    
    // but hey, we need this carry too 
    //var tmp_carry_2 = global_flag_carry;
-   var tmp_carry_2 = get_flag('c');
+   var tmp_carry = get_flag('c');
    
    // first carry and a+b is final output
-   var tmp_out2 = half_adder( tmp_out, tmp_carry);
+   var tmp_out = half_adder( tmp_first_add, tmp_carry_in);
    
    // but before returning, we need to edit carry
    //global_flag_carry = or( tmp_carry_2 , global_flag_carry);
-   set_flag('c' , or( tmp_carry_2 , get_flag('c')) );
+   set_flag('c' , or( tmp_carry , get_flag('c')) );
    
    // Now that was ugly.
-   return tmp_out2;
+   return tmp_out;
   
 }

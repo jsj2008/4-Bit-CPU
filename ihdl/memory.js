@@ -1,35 +1,10 @@
-//// Ok, for next alu-items we need memory. Now we can put the globals here too.
-//// Memory is just array of registers and register is based on D-flipflop.
-//
-//// D flip flop, dff
-//function d_ff(){
-//   // D flip flop has 2 inputs, D and clock.
-//   // on out there's Q and /Q. Let's use just
-//   // Q for simplicity.
-//   // D flip flop uses RS-flipflop
-//   
-//}
-//
-//function rs_ff(r,s){
-//   // RS flip flop uses 2 NOR-ports
-//   // Due to feedback, we need variables.
-//   var out_Q = false;
-//   var out_!Q = false;
-//
-//   out_Q = nor(r,out_!Q);
-//   out_!Q = nor(r,out_Q);
-//   
-//   return out_Q;   
-//}
-//
-// but but... How... This is going to be too much for me now...
-//
-// Let's use array for now, "it's external IC"
-// 
+// Ok, let's get rid of the globals and put everyting in "memory"
+// When I figure out how to make memory out of flip flips, let's use 
+// this.
 
 var memory = [ 
-                [ false, false, false, false ] ,  // 0   PC0
-                [ false, false, false, false ] ,  // 1   PC1
+                [ false, false, false, false ] ,  // 0   PC0 h
+                [ false, false, false, false ] ,  // 1   PC1 l
                 [ false, false, false, false ] ,  // 2   Flags, C A I Z
                 [ false, false, false, false ] ,  // 3   DDR 0-3
                 [ false, false, false, false ] ,  // 4   DDR 4-7
@@ -46,6 +21,8 @@ var memory = [
                 [ false, false, false, false ]    // 15  pins
             ];
 
+
+// If the memory changes, just change these
 var flag_addr = 2;
 var r0_addr = 9;
 var r1_addr = 10;
@@ -53,10 +30,13 @@ var r2_addr = 11;
 var r3_addr = 12;
 var r4_addr = 13;
 
+
+// "Programming" the chip
 function add_to_memory( a ) {
    memory.push( [ a[0] , a[1] , a[2] , a[3] ] );   
 }
 
+// Handlers for memory
 function get_memory( addr){
    return memory[addr];
 }
@@ -68,7 +48,7 @@ function set_memory (addr, value){
    memory[addr][3] = value[3];   
 }
 
-
+// Handlers for flags
 function get_flag(flag){
    if ( flag == 'c')
       return memory[flag_addr][0];
@@ -81,7 +61,6 @@ function get_flag(flag){
 }
 
 function set_flag(flag,value){
-   
    if ( flag == 'c')
       memory[flag_addr][0] = value;
    else if ( flag == 'a')

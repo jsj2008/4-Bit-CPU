@@ -409,3 +409,112 @@ register_r0
 Array [ false, false, false, false ]
 global_flag_carry
 true
+
+
+
+///////
+
+set_flag('c',true)
+get_flag('c')
+four_bit_full_adder_with_carry( [false,false,false,false], [false,false,false,false] )
+
+// For testing memory
+function   print_memory(){
+   document.write("<table>");
+   for( var i = 0 ; i < memory.lenght ; i++){
+      document.write("<tr>");
+      for( var j = 0; j< memory[i].lenght ; j++){
+         document.write(memory[i][j]);   
+      }
+      document.write("</tr>");   
+   }
+
+   document.write("</table>");
+}
+
+
+get_memory(1) + "   " + get_memory(0);
+
+
+// Now that we changed memory, test everything again.
+// Full adder, this should come out
+
+Adder             Out      Carry    check
+full_adder(0,0)   0        0        ok
+full_adder(0,1)   1        0        ok
+full_adder(1,0)   1        0        ok
+full_adder(1,1)   0        1        ok
+
+set_flag('c', false)
+full_adder(1,1);
+get_flag('c')
+
+// Multibit HDL is messy due to memory changes, let's do that again.
+// Now it makes more sense. German radio sounds wierd by the way.
+
+// Test increment_program_counter, 0000 => 0001 => 0010 ok
+//0F => 10 => 11 ok
+set_memory(1,[1,1,1,1]);
+
+// FF => 00 ?
+set_memory(0,[1,1,1,1]);
+set_memory(1,[1,1,1,0]);
+
+// Wtf =D
+true,true,true,true   true,true,true,true
+true,true,true,false   false,false,false,false
+
+FF +1 = E0...
+
+// "Hier ist antenne düssendorf" =D. Wierd when someone talks to you and 
+// you understand only couple of words. Makes you feel dizzy.
+// This project is starting to be my "dear diary".
+
+set_flag('c',true)
+set_flag('a',true)
+four_bit_full_adder( [0,0,0,0] , [0,0,0,0] ); // 0001 ok.
+
+set_flag('c',true)
+set_flag('a',true)
+four_bit_full_adder( [0,0,0,0] , [1,1,1,1] ); // 1110 ? This is this mistake.
+
+set_flag('c',true)
+set_flag('a',true)
+four_bit_full_adder( [0,0,1,0] , [1,1,1,0] );
+
+four_bit_full_adder( [0,0,1,0] , [1,1,1,0] ); // 0000 ok.
+
+set_flag('c',true)
+set_flag('a',true)
+four_bit_full_adder( [0,0,1,0] , [1,1,1,0] ); // 0001 ok?
+
+// So lsb 1+1 and the carry 1 makes this?
+
+set_flag('c', true)
+undefined
+full_adder(1,1)
+true
+get_flag('c')
+true
+// Nope, it's fine.
+
+a = [1,1,1,1]
+b = [1,1,1,1]
+or(and(full_adder(a[3] , b[3]) ,     get_flag('a')),and(half_adder(a[3] , b[3]) , not(get_flag('a'))))
+full_adder(a[2] , b[2]) , 
+full_adder(a[1] , b[1]) , 
+full_adder(a[0] , b[0])  
+                       
+// Ok, so my 2-bit selector has full_adder that changes a and c flags before the other gets executed?
+
+set_memory(0,[1,1,1,1]);
+set_memory(1,[1,1,1,0]);
+increment_program_counter()  // FF +1 = FE O_O
+
+set_memory(0,[1,1,1,1]);
+set_memory(1,[1,1,1,0]);
+increment_program_counter() // Ok
+
+// So error was again the way javascript is not parallel as hardware.
+// It's hard to get it right ;)
+
