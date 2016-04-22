@@ -115,20 +115,17 @@ function is_neg(from, to){
            full_adder(tmp[0] , 0) ].reverse(); 
    set_memory( +r0_addr + +to  , tmp  );
 }
-
-// Next in line ////////////////////////////////////////////////////////////////
-
-// beq 0001 0000        Branch if EQual to zero, If zero flag =1 , jmp 0001 0000
-function is_beg(){
-   
+function is_beg(addr){
+   //or(and( get_flag('z') , is_jmp(addr)) ,
+   //     and( not(get_flag('z')) , is_jmp(get_memory(0).concat(get_memory(1))))); // concat?
+   // Again, these can't happen at same time =(
+   if ( !get_flag('z')){  // if z=0
+      is_jmp(addr);
+   }
 }
-
-
-
-
-// for future   ////////////////////////////////////////////////////////////////
-
-
-
-// bne 0010 1111        Branch if Not Equal, if zero flag =0 , jmp 0010 1111
-function is_bne(){}
+function is_bne(addr){
+//   and( not(get_flag('z')) , is_jmp(addr));
+   if ( get_flag('z')){
+      is_jmp(addr);
+   }
+}
