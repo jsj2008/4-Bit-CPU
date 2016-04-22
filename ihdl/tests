@@ -614,3 +614,98 @@ get_memory(r0_addr) // r0 = 0111
 set_memory( 7 , [1,0,0,0])
 is_get([0,0,0,0],[0,1,1,1])
 get_memory(r0_addr) // r0 = 1000 ok, get works.
+
+// Crr
+
+set_memory(r0_addr , [0,1,0,1]);
+is_crr(1,0);
+get_memory(r0_addr+1 );
+is_crr(5,0);
+get_memory(r0_addr+1 );  // Crr ok.
+
+
+// LDR 
+
+is_ldr( 0 , 12)
+undefined
+get_memory(r0_addr)
+Array [ 1, 1, 0, 0 ]
+is_ldr( 1 , 12)
+undefined
+get_memory(r0_addr)
+Array [ 1, 1, 0, 0 ]
+get_memory(r0_addr+1)
+Array [ 1, 1, 0, 0 ]
+get_memory(r0_addr+2)
+Array [ false, false, false, false ]  // ok
+
+
+// And
+
+set_memory(8 , [0,0,1,1] )
+set_memory(9 , [0,1,0,1] )
+is_and(8,9)
+get_memory(r0_addr)
+Array [ false, false, false, true ]  // and works
+
+//  Or
+
+set_memory(8 , [0,0,1,1] )
+set_memory(9 , [0,1,0,1] )
+is_lor(8,9)
+get_memory(r0_addr)
+Array [ false, true, true, true ] // or works
+
+
+// Xor
+
+set_memory(8 , [0,0,1,1] )
+set_memory(9 , [0,1,0,1] )
+is_xor(8,9)
+get_memory(r0_addr)
+Array [ false, true, true, false ] // Xor works
+
+// Not
+
+set_memory(8 , [0,0,1,1] )
+is_not(8)
+get_memory(r0_addr)
+Array [ true, true, false, false ] // Not works
+
+// Shifts...
+
+// Assing-matrix or this?
+_to_bin(_to_dec([0,0,0,1]) << 1)
+Array [ 0, 0, 1, 0 ]
+
+set_memory(r0_addr, [0,1,0,1])
+is_lsh(0,1)
+get_memory(r0_addr)  // 0101
+
+set_memory(r0_addr, [0,0,0,1])
+is_lsh(r0_addr,3)
+get_memory(r0_addr)  // 1000, left ok.
+
+set_memory(r0_addr, [1,0,0,0])
+is_rsh(r0_addr,3)
+get_memory(r0_addr) // shifts ok
+
+
+// 2n complement
+
+set_memory(r0_addr,[0,0,1,0])
+from = to = 0
+
+
+function is_neg(from, to){
+   var tmp = get_memory(+r0_addr + +from);
+   tmp = [ not(tmp[0]) , not(tmp[1]) , not(tmp[2]) , not(tmp[3]) ];
+   tmp = [ full_adder(tmp[3] , 1) , 
+           full_adder(tmp[2] , 0) , 
+           full_adder(tmp[1] , 0) , 
+           full_adder(tmp[0] , 0) ].reverse(); 
+   set_memory( +r0_addr + +to  , tmp  );
+}
+
+get_memory(r0_addr)
+Array [ true, true, true, false ]  // works

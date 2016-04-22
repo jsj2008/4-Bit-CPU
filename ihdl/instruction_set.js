@@ -32,58 +32,103 @@
 //
 
 // Working
+
+//
+// nop jmp get put
+// 
 function is_nop(){
    increment_program_counter();
 }
-
 function is_jmp(addr){
    set_memory( 0 , [ addr[0], addr[1], addr[2] , addr[3] ]);   
    set_memory( 1 , [ addr[4], addr[5], addr[6] , addr[7] ]);   
 }
-
+function is_get(addr1,addr2){
+   set_memory( r0_addr  , get_memory( memory_address(addr1,addr2)) );
+}
 function is_put(addr1,addr2){
-   //set_memory( _to_dec(get_memory( memory_address(addr1,addr2))) , get_memory(r0_addr));
    set_memory(memory_address(addr1,addr2) , get_memory(r0_addr))
 }
 
-function is_get(addr1,addr2){
-   //set_memory( memory_address(r0_addr)  , get_memory( memory_address(addr1,addr2)) );
-   set_memory( r0_addr  , get_memory( memory_address(addr1,addr2)) );
+// ldr crr and lor
+function is_ldr(reg, value){
+   set_memory( +r0_addr + +reg  , _to_bin(value)  );
+}
+function is_crr(to,from){
+   set_memory( +r0_addr + +to  , get_memory( +r0_addr + +from  ) );
+}
+function is_and(addr1, addr2){
+   var tmp = [and(get_memory(addr1)[0] , get_memory(addr2)[0]) , 
+              and(get_memory(addr1)[1] , get_memory(addr2)[1]) , 
+              and(get_memory(addr1)[2] , get_memory(addr2)[2]) , 
+              and(get_memory(addr1)[3] , get_memory(addr2)[3]) ];
+            
+   set_memory( r0_addr  , tmp  );
+}
+function is_lor(addr1, addr2){
+   var tmp = [or(get_memory(addr1)[0] , get_memory(addr2)[0]) , 
+              or(get_memory(addr1)[1] , get_memory(addr2)[1]) , 
+              or(get_memory(addr1)[2] , get_memory(addr2)[2]) , 
+              or(get_memory(addr1)[3] , get_memory(addr2)[3]) ];
+            
+   set_memory( r0_addr  , tmp  );
 }
 
+// not xor lsh rsh
+function is_not(addr){
+   var tmp = [not(get_memory(addr)[0]) , 
+              not(get_memory(addr)[1]) , 
+              not(get_memory(addr)[2]) , 
+              not(get_memory(addr)[3]) ];
+            
+   set_memory( r0_addr  , tmp  );
+}
+function is_xor(addr1, addr2){
+   var tmp = [xor(get_memory(addr1)[0] , get_memory(addr2)[0]) , 
+              xor(get_memory(addr1)[1] , get_memory(addr2)[1]) , 
+              xor(get_memory(addr1)[2] , get_memory(addr2)[2]) , 
+              xor(get_memory(addr1)[3] , get_memory(addr2)[3]) ];
+            
+   set_memory( r0_addr  , tmp  );
+}
+function is_lsh(addr, amount){
+   var tmp = get_memory(addr);
+   tmp = _to_bin(_to_dec(tmp) << amount)
+   set_memory(addr, tmp);
+}
+function is_rsh(addr, amount){
+   var tmp = get_memory(addr);
+   tmp = _to_bin(_to_dec(tmp) >> amount)
+   set_memory(addr, tmp);
+}
+
+// add neg beq bne
 function is_add(a,b){
    set_memory( r0_addr , four_bit_full_adder( a,b) );
 }
+function is_neg(from, to){
+   var tmp = get_memory(+r0_addr + +from);
+   tmp = [ not(tmp[0]) , not(tmp[1]) , not(tmp[2]) , not(tmp[3]) ];
+   tmp = [ full_adder(tmp[3] , 1) , 
+           full_adder(tmp[2] , 0) , 
+           full_adder(tmp[1] , 0) , 
+           full_adder(tmp[0] , 0) ].reverse(); 
+   set_memory( +r0_addr + +to  , tmp  );
+}
 
-// Next in line
+// Next in line ////////////////////////////////////////////////////////////////
 
-// ldr 0010 0110        LoaD to Register, r2 = 6
-function is_ldr(){}
-
-
-// for future
-
-// crr 0110 0011        Copy Register value to another Register, r6 = r3                   
-function is_crr(){}
-// and 0001 0010        logical AND, r0 = r1 and r2
-function is_and(){}
-// lor 0100 0110        Logical OR, r0 = r4 or r6
-function is_lor(){}
-function is_(){}
-
-
-// not 0101 0011        logical NOT, r5 = not r3
-function is_not(){}
-// xor 0010 0011        eXclusive OR, r0 = r2 xor r3
-function is_xor(){}
-// lsh 0001 0001        Left SHift,  r1 = r1 << 1
-function is_lsh(){}
-// rsh 0110 0101        Right SHift, r6 = r6 >> 5                                                                                                           
-function is_rsh(){}
-
-// neg 0001 0100        NEGate, r1 = one's complement of r4
-function is_neg(){}
 // beq 0001 0000        Branch if EQual to zero, If zero flag =1 , jmp 0001 0000
-function is_beg(){}
+function is_beg(){
+   
+}
+
+
+
+
+// for future   ////////////////////////////////////////////////////////////////
+
+
+
 // bne 0010 1111        Branch if Not Equal, if zero flag =0 , jmp 0010 1111
 function is_bne(){}
