@@ -37,7 +37,7 @@
 // nop jmp get put
 // 
 function is_nop(){
-   increment_program_counter();
+//   increment_program_counter();
 }
 function is_jmp(addr){
    set_memory( 0 , [ addr[0], addr[1], addr[2] , addr[3] ]);   
