@@ -28,7 +28,36 @@
 1100
 </textarea>
 <button onclick="program()">Program</button>
+<button onclick="simulate_one_tick()">Simulate one Cycle</button>
 <p id="testi"></p>
+
+
+<table border=1>
+   <tr><td>PC</td><td id="info_pc"></td></tr>
+   <tr><td>Memory size</td><td id="info_memory_max"></td></tr>
+
+</table>
+
+<table border=1>
+   <tr><td>PC high</td>        <td id="value_pch"  > false,false,false,false  </td></tr>
+   <tr><td>PC low</td>         <td id="value_pcl"  > false,false,false,false  </td></tr>
+   <tr><td>Flags (caiz)</td>   <td id="value_flags"> false,false,false,false  </td></tr>
+   <tr><td>DDR  0-3</td>       <td id="value_ddr0" > false,false,false,false  </td></tr>
+   <tr><td>DDR  4-7</td>       <td id="value_ddr4" > false,false,false,false  </td></tr>
+   <tr><td>DDR 8-11</td>       <td id="value_ddr8" > false,false,false,false  </td></tr>
+   <tr><td>I/O  0-3</td>       <td id="value_io0"  > false,false,false,false  </td></tr>
+   <tr><td>I/O  4-7</td>       <td id="value_io4"  > false,false,false,false  </td></tr>
+   <tr><td>I/O 8-11</td>       <td id="value_io8"  > false,false,false,false  </td></tr>
+   <tr><td>R0</td>             <td id="value_r0"   > false,false,false,false  </td></tr>
+   <tr><td>R1</td>             <td id="value_r1"   > false,false,false,false  </td></tr>
+   <tr><td>R2</td>             <td id="value_r2"   > false,false,false,false  </td></tr>
+   <tr><td>R3</td>             <td id="value_r3"   > false,false,false,false  </td></tr>
+   <tr><td>R4</td>             <td id="value_r4"   > false,false,false,false  </td></tr>
+   <tr><td>Interrupt high</td> <td id="value_inth" > false,false,false,false  </td></tr>
+   <tr><td>Interrupt low</td>  <td id="value_intl" > false,false,false,false  </td></tr>
+</table>
+
+
 
 </body>
 <script src="./memory.js"></script>
@@ -46,6 +75,8 @@ function test(){
    console.log("Good job, your javascript is enabled!");   
    console.log("Remember to do that before doing JS-development");
    console.log("and figuring out why it wont work anymore.");   
+   update_values();
+
 }
 
 

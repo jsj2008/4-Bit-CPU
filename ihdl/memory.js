@@ -3,7 +3,7 @@
 // this.
 
 var memory = [ 
-                [ false, false, false, false ] ,  // 0   PC0 h
+                [ false, false, false, true ] ,   // 0   PC0 h
                 [ false, false, false, false ] ,  // 1   PC1 l
                 [ false, false, false, false ] ,  // 2   Flags, C A I Z
                 [ false, false, false, false ] ,  // 3   DDR 0-3
