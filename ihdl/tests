@@ -706,7 +706,6 @@ Array [ true, true, true, false ]  // works
 get_memory(0).concat(get_memory(1))
 is_beg([0,0,1,1 ,0,0,0,1])
 get_memory(0).concat(get_memory(1))  // 0011 0001
-
 set_flag('z',1)
 get_memory(0).concat(get_memory(1))
 is_beg([0,0,1,1 ,0,0,0,1])
@@ -722,3 +721,40 @@ is_bne([0,0,1,1 ,0,0,0,1])
 get_memory(0).concat(get_memory(1)) // 0011 0001
 
 // Instruction set ok.
+
+
+//// Something fishy at ldr.
+function is_ldr(reg, value){
+   set_memory( +r0_addr + +reg  , _to_bin(value)  );
+}
+// it wants value as dec?
+
+set_memory( +r0_addr + +_to_dec([0,0,0,0])  ,[0,1,0,1]  );
+ +r0_addr + +_to_dec([0,0,0,0]) 
+ 
+is_ldr([0,0,0,0],[1,1,1,1])
+set_memory( +r0_addr + +_to_dec([0,0,0,0])  ,[1,1,1,1]  );
+
+// Ok, so every is_* should accept 4-bit arrays as input.
+// Let's change those.
+
+// And... and or
+is_ldr([0,0,0,1], [0,0,1,1])
+is_ldr([0,0,1,0], [0,1,0,1])
+is_and([0,0,0,1] , [ 0,0,1,0])
+
+is_ldr([0,0,0,1], [0,0,1,1])
+is_ldr([0,0,1,0], [0,1,0,1])
+is_lor([0,0,0,1] , [ 0,0,1,0])
+
+is_ldr([0,0,0,1], [0,0,1,1])
+is_not([0,0,0,0],_to_bin(r0_addr+_to_dec([0,0,0,1])))
+
+is_ldr([0,0,0,1], [0,0,1,1])
+is_ldr([0,0,1,0], [0,1,0,1])
+is_xor([0,0,0,1] , [ 0,0,1,0])
+
+
+is_ldr([0,0,0,1], [0,0,1,1])
+is_ldr([0,0,1,0], [0,1,0,1])
+is_add([0,0,0,1] , [0,0,1,0])

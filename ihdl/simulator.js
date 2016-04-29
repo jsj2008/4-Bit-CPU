@@ -84,7 +84,7 @@ function simulate_one_tick(){
       else if ( command == 6) { is_and( param1, param2); }
       else if ( command == 7) { is_lor( param1, param2); }
 
-      else if ( command == 8)  { is_not( param1, param2);  console.log("not is only 2 wide!");}
+      else if ( command == 8)  { is_not( param1, param2); }
       else if ( command == 9)  { is_xor( param1, param2); }
       else if ( command == 10) { is_lsh( param1, param2); }
       else if ( command == 11) { is_rsh( param1, param2); }

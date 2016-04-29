@@ -37,95 +37,106 @@
 // nop jmp get put
 // 
 function is_nop(){
-//   increment_program_counter();
+
 }
-function is_jmp(addr){
-   set_memory( 0 , [ addr[0], addr[1], addr[2] , addr[3] ]);   
-   set_memory( 1 , [ addr[4], addr[5], addr[6] , addr[7] ]);   
+function is_jmp(addr1, addr2){
+   set_memory( 0 , addr1);
+   set_memory( 1 , addr2);
+//   set_memory( 0 , [ addr[0], addr[1], addr[2] , addr[3] ]);   
+//   set_memory( 1 , [ addr[4], addr[5], addr[6] , addr[7] ]);   
 }
 function is_get(addr1,addr2){
    set_memory( r0_addr  , get_memory( memory_address(addr1,addr2)) );
 }
 function is_put(addr1,addr2){
+//   set_memory(memory_address(_to_dec(addr1),_to_dec(addr2)) , get_memory(r0_addr))
    set_memory(memory_address(addr1,addr2) , get_memory(r0_addr))
 }
-
 // ldr crr and lor
 function is_ldr(reg, value){
-   set_memory( +r0_addr + +reg  , _to_bin(value)  );
+   set_memory( +r0_addr + +_to_dec(reg)  ,value  );
 }
 function is_crr(to,from){
-   set_memory( +r0_addr + +to  , get_memory( +r0_addr + +from  ) );
+//   set_memory( +r0_addr + +to  , get_memory( +r0_addr + +from  ) );
+   set_memory( +r0_addr + +_to_dec(to)  , get_memory( +r0_addr + +_to_dec(from)  ) );
 }
-function is_and(addr1, addr2){
-   var tmp = [and(get_memory(addr1)[0] , get_memory(addr2)[0]) , 
-              and(get_memory(addr1)[1] , get_memory(addr2)[1]) , 
-              and(get_memory(addr1)[2] , get_memory(addr2)[2]) , 
-              and(get_memory(addr1)[3] , get_memory(addr2)[3]) ];
-            
-   set_memory( r0_addr  , tmp  );
-}
-function is_lor(addr1, addr2){
-   var tmp = [or(get_memory(addr1)[0] , get_memory(addr2)[0]) , 
-              or(get_memory(addr1)[1] , get_memory(addr2)[1]) , 
-              or(get_memory(addr1)[2] , get_memory(addr2)[2]) , 
-              or(get_memory(addr1)[3] , get_memory(addr2)[3]) ];
-            
-   set_memory( r0_addr  , tmp  );
-}
+function is_and(reg1, reg2){
+   var tmp1 = get_memory( r0_addr + _to_dec(reg1));
+   var tmp2 = get_memory( r0_addr + _to_dec(reg2));
+   
+   var out = [ and( tmp1[0] , tmp2[0]) ,
+               and( tmp1[1] , tmp2[1]) ,
+               and( tmp1[2] , tmp2[2]) ,
+               and( tmp1[3] , tmp2[3]) ]
 
+   set_memory( r0_addr  , out );
+}
+function is_lor(reg1, reg2){
+   var tmp1 = get_memory( r0_addr + _to_dec(reg1));
+   var tmp2 = get_memory( r0_addr + _to_dec(reg2));
+   
+   var out = [ or( tmp1[0] , tmp2[0]) ,
+               or( tmp1[1] , tmp2[1]) ,
+               or( tmp1[2] , tmp2[2]) ,
+               or( tmp1[3] , tmp2[3]) ]
+
+   set_memory( r0_addr  , out );
+}
 // not xor lsh rsh
-function is_not(addr){
-   var tmp = [not(get_memory(addr)[0]) , 
-              not(get_memory(addr)[1]) , 
-              not(get_memory(addr)[2]) , 
-              not(get_memory(addr)[3]) ];
+function is_not(addr1, addr2){
+   var tmp = get_memory( memory_address( addr1, addr2));
+   tmp = [not(tmp[0]) , 
+          not(tmp[1]) , 
+          not(tmp[2]) , 
+          not(tmp[3]) ];
             
    set_memory( r0_addr  , tmp  );
 }
-function is_xor(addr1, addr2){
-   var tmp = [xor(get_memory(addr1)[0] , get_memory(addr2)[0]) , 
-              xor(get_memory(addr1)[1] , get_memory(addr2)[1]) , 
-              xor(get_memory(addr1)[2] , get_memory(addr2)[2]) , 
-              xor(get_memory(addr1)[3] , get_memory(addr2)[3]) ];
-            
-   set_memory( r0_addr  , tmp  );
+function is_xor(reg1, reg2){
+   var tmp1 = get_memory( r0_addr + _to_dec(reg1));
+   var tmp2 = get_memory( r0_addr + _to_dec(reg2));
+   
+   var out = [ xor( tmp1[0] , tmp2[0]) ,
+               xor( tmp1[1] , tmp2[1]) ,
+               xor( tmp1[2] , tmp2[2]) ,
+               xor( tmp1[3] , tmp2[3]) ]
+
+   set_memory( r0_addr  , out );
 }
 function is_lsh(addr, amount){
-   var tmp = get_memory(addr);
-   tmp = _to_bin(_to_dec(tmp) << amount)
-   set_memory(addr, tmp);
+   var tmp = get_memory(r0_addr + _to_dec(addr));
+   tmp = _to_bin(_to_dec(tmp) << _to_dec(amount));
+   set_memory(r0_addr + _to_dec(addr), tmp);
 }
 function is_rsh(addr, amount){
-   var tmp = get_memory(addr);
-   tmp = _to_bin(_to_dec(tmp) >> amount)
-   set_memory(addr, tmp);
+   var tmp = get_memory(r0_addr + _to_dec(addr));
+   tmp = _to_bin(_to_dec(tmp) >> _to_dec(amount));
+   set_memory(r0_addr + _to_dec(addr), tmp);
 }
-
 // add neg beq bne
-function is_add(a,b){
-   set_memory( r0_addr , four_bit_full_adder( a,b) );
+function is_add(addr1, addr2){
+//   set_memory( r0_addr , four_bit_full_adder( a,b) );
+   var tmp1 = get_memory(+r0_addr + +_to_dec(addr1));
+   var tmp2 = get_memory(+r0_addr + +_to_dec(addr2));
+   var out = four_bit_full_adder( tmp1, tmp2);
+   set_memory( r0_addr , out);
+
 }
 function is_neg(from, to){
-   var tmp = get_memory(+r0_addr + +from);
-   tmp = [ not(tmp[0]) , not(tmp[1]) , not(tmp[2]) , not(tmp[3]) ];
-   tmp = [ full_adder(tmp[3] , 1) , 
-           full_adder(tmp[2] , 0) , 
-           full_adder(tmp[1] , 0) , 
-           full_adder(tmp[0] , 0) ].reverse(); 
-   set_memory( +r0_addr + +to  , tmp  );
+   var tmp_from = get_memory(+r0_addr + +_to_dec(from));
+   var out = [ full_adder(tmp_from[3] ,1) , 
+               full_adder(tmp_from[2] ,0) , 
+               full_adder(tmp_from[1] ,0) , 
+               full_adder(tmp_from[0] ,0) ].reverse();
+   set_memory(+r0_addr + +_to_dec(to) , out);
 }
-function is_beg(addr){
-   //or(and( get_flag('z') , is_jmp(addr)) ,
-   //     and( not(get_flag('z')) , is_jmp(get_memory(0).concat(get_memory(1))))); // concat?
-   // Again, these can't happen at same time =(
+function is_beg(addr1, addr2){
    if ( !get_flag('z')){  // if z=0
-      is_jmp(addr);
+      is_jmp(addr1, addr2);
    }
 }
-function is_bne(addr){
-//   and( not(get_flag('z')) , is_jmp(addr));
+function is_bne(addr1, addr2){
    if ( get_flag('z')){
-      is_jmp(addr);
+      is_jmp(addr1, addr2);
    }
 }
