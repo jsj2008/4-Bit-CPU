@@ -758,3 +758,23 @@ is_xor([0,0,0,1] , [ 0,0,1,0])
 is_ldr([0,0,0,1], [0,0,1,1])
 is_ldr([0,0,1,0], [0,1,0,1])
 is_add([0,0,0,1] , [0,0,1,0])
+
+
+// Jmp is acting up..
+
+label:
+   jmp label
+   
+jmp 0001 0000
+0001 0001 0000
+
+
+Command: jmp         simulator.js:68:4
+Param 1: 0,0,0,1     simulator.js:78:7
+Param 2: 0,0,0,0     simulator.js:79:7
+Command: nop
+
+// Where did the nop came? jmp is not changing PC.
+// Oh,  is_jmp( param1.concat(param2)); should be is_jmp(param1, param2 ).
+
+

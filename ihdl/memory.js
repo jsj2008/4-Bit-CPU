@@ -2,7 +2,10 @@
 // When I figure out how to make memory out of flip flips, let's use 
 // this.
 
-var memory = [ 
+var memory = [];
+
+function init_memory(){
+   memory = [ 
                 [ false, false, false, true ] ,   // 0   PC0 h
                 [ false, false, false, false ] ,  // 1   PC1 l
                 [ false, false, false, false ] ,  // 2   Flags, C A I Z
@@ -20,7 +23,11 @@ var memory = [
                 [ false, false, false, false ] ,  // 14  Interrupt
                 [ false, false, false, false ]    // 15  pins
             ];
+   
+}
 
+
+var memory_used = 0;
 
 function memory_address( page,addr){
    return +_to_dec(page)*16 + +_to_dec(addr);   

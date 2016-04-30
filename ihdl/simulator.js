@@ -10,6 +10,9 @@
 // so like programming the memory.
 //
 function program(){
+   
+   init_memory();
+   
    // Get the binary from text field 
    var bin = document.getElementById("binary_input").value;
 
@@ -71,29 +74,27 @@ function simulate_one_tick(){
       var param2 = get_memory(_to_dec(get_memory(0))*16 + _to_dec(get_memory(1)));
       increment_program_counter();
 
+
       console.log("Param 1: " + param1);   
       console.log("Param 2: " + param2);
-      
+
       // What command to execute?
-      if ( command == 1) { is_jmp( param1.concat(param2)); }
-      else if ( command == 2) { is_get( param1, param2); }
-      else if ( command == 3) { is_put( param1, param2); }
-
-      else if ( command == 4) { is_ldr( param1, param2); }
-      else if ( command == 5) { is_crr( param1, param2); }
-      else if ( command == 6) { is_and( param1, param2); }
-      else if ( command == 7) { is_lor( param1, param2); }
-
-      else if ( command == 8)  { is_not( param1, param2); }
-      else if ( command == 9)  { is_xor( param1, param2); }
+      command = _to_dec( command);      
+      if      ( command ==  1) { is_jmp( param1, param2); }
+      else if ( command ==  2) { is_get( param1, param2); }
+      else if ( command ==  3) { is_put( param1, param2); }
+      else if ( command ==  4) { is_ldr( param1, param2); }
+      else if ( command ==  5) { is_crr( param1, param2); }
+      else if ( command ==  6) { is_and( param1, param2); }
+      else if ( command ==  7) { is_lor( param1, param2); }
+      else if ( command ==  8) { is_not( param1, param2); }
+      else if ( command ==  9) { is_xor( param1, param2); }
       else if ( command == 10) { is_lsh( param1, param2); }
       else if ( command == 11) { is_rsh( param1, param2); }
-
       else if ( command == 12) { is_add( param1, param2); }
       else if ( command == 13) { is_neg( param1, param2); }
       else if ( command == 14) { is_beq( param1, param2); }
       else if ( command == 15) { is_bne( param1, param2); }
-      
    }
 
 
@@ -124,7 +125,19 @@ function update_values(){
 
 
    document.getElementById("info_pc").innerHTML = _to_dec(get_memory(0))*16 + _to_dec(get_memory(1));
+   document.getElementById("memory_used").innerHTML = memory_used;
    document.getElementById("info_memory_max").innerHTML = memory.length;
+
+   
+   document.getElementById("testi").innerHTML = "<b>Program</b><br>";
+
+   for( var i = 16 ; i<memory_used ; i++){
+      document.getElementById("testi").innerHTML +=  i + ":&nbsp;&nbsp;&nbsp;";
+      document.getElementById("testi").innerHTML += memory[i];
+      if( (memory_address(get_memory(0) , get_memory(1)) ) == i)
+         document.getElementById("testi").innerHTML += "&nbsp;&nbsp;&nbsp;<--- PC&nbsp;&nbsp;&nbsp;&nbsp;";
+      document.getElementById("testi").innerHTML += "<br>";
+   }
 }
 
 
@@ -139,6 +152,7 @@ function bin_to_command(i){
 
 function fill_rest_of_memory(){
    // Memory max = 256
+   memory_used = memory.length;
    for( var i = memory.length ; i < 256 ; i++ ) {
       memory.push( [0,0,0,0]) ;
    }   

@@ -3,10 +3,29 @@
 <head>
    <meta charset="UTF-8">
    <title></title>
+   <style>
+      #testi {
+         position:absolute;
+         right: 0px;
+         top: 0px;
+      }
+   </style>
 </head>
 <body onload="test()">
 
 <textarea id="binary_input">
+0100
+0000
+1111
+0011
+0000
+0011
+0100
+0000
+0000
+0011
+0000
+0100
 0010
 0000
 0110
@@ -34,11 +53,10 @@
 <br>
 <button onclick="update_values()">Update values</button>
 <br>
-<p id="testi"></p>
-
 
 <table border=1>
    <tr><td>PC</td><td id="info_pc"></td></tr>
+   <tr><td>Used memory</td><td id="memory_used"></td></tr>
    <tr><td>Memory size</td><td id="info_memory_max"></td></tr>
 
 </table>
@@ -62,6 +80,7 @@
    <tr><td>Interrupt low</td>  <td id="value_intl" > false,false,false,false  </td></tr>
 </table>
 
+<p id="testi"></p>
 
 
 </body>
