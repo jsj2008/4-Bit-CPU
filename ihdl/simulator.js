@@ -42,30 +42,17 @@ function program(){
 
    fill_rest_of_memory();
    update_values();
-   ////
-   //// form memory-table at the bottom of page,
-   //// just debugging.
-   ////
-   //var table = document.createElement('table');
-   //for (var i = 0; i < memory.length; i++){
-   //   var row = document.createElement('tr');
-   //   for (var j = 0; j < memory[i].length; j++) {
-   //      var cell = document.createElement('td');
-   //      cell.textContent = memory[i][j];
-   //      row.appendChild(cell);
-   //   }
-   //   table.appendChild(row);
-   // }
-   //document.body.appendChild(table);
+
 }
 
 function simulate_one_tick(){
-   
+      
    // What command is next in line? get_memory(*pc)
    var command = get_memory(_to_dec(get_memory(0))*16 + _to_dec(get_memory(1)));
 
    increment_program_counter();
    console.log("Command: " + bin_to_command(_to_dec(command)));   
+
 
    // Is not nop?
    if( _to_dec(command) != 0){
@@ -73,7 +60,6 @@ function simulate_one_tick(){
       increment_program_counter();   
       var param2 = get_memory(_to_dec(get_memory(0))*16 + _to_dec(get_memory(1)));
       increment_program_counter();
-
 
       console.log("Param 1: " + param1);   
       console.log("Param 2: " + param2);
@@ -97,11 +83,12 @@ function simulate_one_tick(){
       else if ( command == 15) { is_bne( param1, param2); }
    }
 
-
    update_values();
 }
 
 function update_values(){
+   
+   console.log("Updating table");
    document.getElementById("value_pch").innerHTML = get_memory(0);
    document.getElementById("value_pcl").innerHTML = get_memory(1);
 
@@ -131,13 +118,16 @@ function update_values(){
    
    document.getElementById("testi").innerHTML = "<b>Program</b><br>";
 
+   var tmp;
    for( var i = 16 ; i<memory_used ; i++){
-      document.getElementById("testi").innerHTML +=  i + ":&nbsp;&nbsp;&nbsp;";
-      document.getElementById("testi").innerHTML += memory[i];
+      tmp += i + ":&nbsp;&nbsp;&nbsp;" + memory[i];
       if( (memory_address(get_memory(0) , get_memory(1)) ) == i)
-         document.getElementById("testi").innerHTML += "&nbsp;&nbsp;&nbsp;<--- PC&nbsp;&nbsp;&nbsp;&nbsp;";
-      document.getElementById("testi").innerHTML += "<br>";
+         tmp += "&nbsp;&nbsp;&nbsp;<--- PC&nbsp;&nbsp;&nbsp;&nbsp;";
+      tmp += "<br>";
    }
+   document.getElementById("testi").innerHTML = tmp;
+   console.log("Values updated");
+
 }
 
 
