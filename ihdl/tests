@@ -952,3 +952,19 @@ jmp 0001 1100
 
 // We got stuck on wrong place again...
 // bne,beq didn't work
+
+
+// z=1, beq, !bne
+set_flag('z', 1)
+is_beq([0,1,0,1] , [1,0,1,0])
+is_bne([1,1,0,0] , [0,0,1,1])
+=> pc = 0101 1010
+
+// z=0, !beq, bne
+set_flag('z', 0)
+is_beq([0,1,0,1] , [1,0,1,0])
+is_bne([1,1,0,0] , [0,0,1,1])
+=> pc = 1100 0011
+
+// bne and beq seems to work
+
