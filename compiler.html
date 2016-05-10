@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <title>4-bit-cpu Compiler</title>
+</head>
+<body>
+
+<button onclick="parse()">Compile</button>
+<textarea id="code_input" rows="20" cols="50">
+
+plop = 1;
+while( plop < 10 ){
+   plop =  plop + 1;
+}
+
+
+</textarea>
+<p id="output"></p>
+
+</body>
+<script>
+
+// Reserved words
+var reserved_words = [ ";" , 
+                      "while",  "(" , ")", "{", "}" ,
+                      "if", "else" ];
+
+// Variables
+var variables = [];
+
+function parse(){
+   var code=document.getElementById("code_input").value;     
+
+   // lowercase all
+   code = code.toLowerCase();
+
+
+   // Change keywords; "if(something)" => " if ( something ) "
+   for( var n = 0; n < reserved_words.length ; n++){
+      
+      // Goddamit, hacky regex. Hours of pain and manuals.
+      var re = new RegExp('\\'  + reserved_words[n], 'g');
+      code = code.replace(re, ' ' + reserved_words[n] + ' ' );
+   }
+   
+   // everything is separated with whitespace
+   code = code.split(/\s+/g);  
+
+
+   // remove empty elements
+   for ( i = code.length-1 ; i >= 0; i--) {
+      if( code[i][0] == "*" ){
+         code.splice(i,1);
+      }
+      
+      if ( code[i] === ""){
+         code.splice(i,1);         
+      }
+   }
+
+   // plop,=,1,;,while,(,plop,<,10,),{,plop,=,plop,+,1,;,}
+   for( n =0 ; n<code.length ; n++){
+      // find code[n] in reserwed_words, if not found
+   }
+
+   document.getElementById("output").innerHTML = code;
+
+}
+
+
+</script>
+</html>
