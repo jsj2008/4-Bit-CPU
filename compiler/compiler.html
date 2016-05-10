@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <title>4-bit-cpu Compiler</title>
+</head>
+<body>
+
+<button onclick="parse()">Compile</button>
+<textarea id="code_input" rows="20" cols="50">
+
+test = 1;
+awesome = 2;
+cool = 2;
+while( test < 10 ){
+   test =  test + 1;
+}
+
+
+</textarea>
+<p>output:</p><p id="output"></p>
+<p>variables:</p><p id="vars"></p>
+
+</body>
+<script src="./compiler.js"></script>
+</html>
