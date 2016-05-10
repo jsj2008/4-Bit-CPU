@@ -86,12 +86,46 @@ function simulate_one_tick(){
    update_values();
 }
 
-function update_values(){
+function simulate_many_ticks(){
+   // How many tics?   
+   var amount = parseInt(document.getElementById("simulated_tics").value);
    
-   console.log("Updating table");
+   for ( var i = 0 ; i<amount ; i++){
+      // Copypaste the simulate one tick without updating values
+      var command = get_memory(_to_dec(get_memory(0))*16 + _to_dec(get_memory(1)));
+      increment_program_counter();
+      if( _to_dec(command) != 0){
+         var param1 = get_memory(_to_dec(get_memory(0))*16 + _to_dec(get_memory(1)));
+         increment_program_counter();   
+         var param2 = get_memory(_to_dec(get_memory(0))*16 + _to_dec(get_memory(1)));
+         increment_program_counter();
+         command = _to_dec( command);      
+         if      ( command ==  1) { is_jmp( param1, param2); }
+         else if ( command ==  2) { is_get( param1, param2); }
+         else if ( command ==  3) { is_put( param1, param2); }
+         else if ( command ==  4) { is_ldr( param1, param2); }
+         else if ( command ==  5) { is_crr( param1, param2); }
+         else if ( command ==  6) { is_and( param1, param2); }
+         else if ( command ==  7) { is_lor( param1, param2); }
+         else if ( command ==  8) { is_not( param1, param2); }
+         else if ( command ==  9) { is_xor( param1, param2); }
+         else if ( command == 10) { is_lsh( param1, param2); }
+         else if ( command == 11) { is_rsh( param1, param2); }
+         else if ( command == 12) { is_add( param1, param2); }
+         else if ( command == 13) { is_neg( param1, param2); }
+         else if ( command == 14) { is_beq( param1, param2); }
+         else if ( command == 15) { is_bne( param1, param2); }
+      }
+
+   }
+   update_values();   
+}
+
+
+function update_values(){
+
    document.getElementById("value_pch").innerHTML = get_memory(0);
    document.getElementById("value_pcl").innerHTML = get_memory(1);
-
    document.getElementById("value_flags").innerHTML = get_memory(2);
 
    document.getElementById("value_ddr0").innerHTML = get_memory(3);
@@ -110,7 +144,6 @@ function update_values(){
    document.getElementById("value_inth").innerHTML = get_memory(14);
    document.getElementById("value_intl").innerHTML = get_memory(15);
 
-
    document.getElementById("info_pc").innerHTML = _to_dec(get_memory(0))*16 + _to_dec(get_memory(1));
    document.getElementById("memory_used").innerHTML = memory_used;
    document.getElementById("info_memory_max").innerHTML = memory.length;
@@ -118,7 +151,7 @@ function update_values(){
    
    document.getElementById("testi").innerHTML = "<b>Program</b><br>";
 
-   var tmp;
+   var tmp ="";
    for( var i = 16 ; i<memory_used ; i++){
       tmp += i + ":&nbsp;&nbsp;&nbsp;" + memory[i];
       if( (memory_address(get_memory(0) , get_memory(1)) ) == i)
@@ -126,8 +159,6 @@ function update_values(){
       tmp += "<br>";
    }
    document.getElementById("testi").innerHTML = tmp;
-   console.log("Values updated");
-
 }
 
 

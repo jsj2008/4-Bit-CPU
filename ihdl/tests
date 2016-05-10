@@ -779,5 +779,176 @@ Command: nop
 
 // So slow... It's the loop at end of "update_values"
 
+//////////////////////////////////
+// Oh yea! Flags aren't working!
+nop jmp get put
+ldr crr and lor
+not xor lsh rsh
+add neg beq bne
+
+// Flags (caiz)
+
+// C flag:    add  (, lsh , rsh) only add.
+// A/I flag, only via memory manipulation.
+// Z flag... get ldr crr and lor xor lsh rsh add 
 
 
+// Z flag... get ldr crr and lor xor lsh rsh add 
+is_ldr( [0,0,0,1] , [0,0,0,0] )
+is_ldr( [0,0,1,0] , [0,0,0,1] )
+is_add( [0,0,0,1] , [0,0,0,0] ) ;  // Z true
+is_add( [0,0,0,1] , [0,0,1,0] ) ;  // Z false
+
+// Add and Z ok.
+
+is_ldr( [0,0,0,0] , [0,0,0,0] ) 
+is_ldr( [0,0,0,1] , [0,1,0,0] ) 
+is_rsh( [0,0,0,0] , [0,0,0,0] )  // Z true 
+is_rsh( [0,0,0,1] , [0,0,0,0] )  // Z false
+is_lsh( [0,0,0,0] , [0,0,0,0] )  // Z true 
+is_lsh( [0,0,0,1] , [0,0,0,0] )  // Z false
+
+// lsh, rsh ok.
+
+// Z flag, get ldr crr and lor xor
+is_ldr([0,0,0,1] , [0,0,0,1]) // r0 = 0 ,r1  = 1
+is_xor([0,0,0,0], [0,0,0,0] ) // r0 xor r0 = 0 xor 0 = 0 => Z=1 
+is_xor([0,0,0,1], [0,0,0,0] ) // r1 xor r0 = 0 xor 1 = 1 => Z=0 
+
+// Xor ok... 
+
+is_ldr([0,0,0,1] , [0,0,0,1])  // r0 = 0 ,r1  = 1
+is_lor([0,0,0,0] , [0,0,0,0] ) // r0 or r0 = 0 or 0 = 0 => Z=1 
+is_lor([0,0,0,1] , [0,0,0,0] ) // r1 or r0 = 0 or 1 = 1 => Z=0 
+
+// Or ok.
+
+is_ldr([0,0,0,1] , [0,0,0,1])  // r0 = 0 ,r1  = 1
+is_and([0,0,0,0] , [0,0,0,0] ) // r0 and r0 = 0 and 0 = 0 => Z=1 
+is_and([0,0,0,1] , [0,0,0,1] ) // r1 and r1 = 1 and 1 = 1 => Z=0 
+
+// And ok.
+
+
+// Z flag, get ldr crr 
+
+//crr ok
+//ldr ok
+// get ok.
+
+// So now that flags should work, let's test the branchs...
+
+*// r0 = a
+ldr 0000 1010
+*// a != 0 => beq does nothing.
+beq label2    
+*// jump to label 1.
+jmp label1     
+nop
+nop
+nop
+nop
+label1:
+jmp label1
+nop
+nop
+nop
+nop
+label2:
+jmp label2
+
+
+Command: ldr      simulator.js:54:4
+Param 1: 0,0,0,0  simulator.js:64:7
+Param 2: 1,0,1,0  simulator.js:65:7
+Command: beq      simulator.js:54:4
+Param 1: 0,0,1,0  simulator.js:64:7
+Param 2: 0,1,0,0  simulator.js:65:7
+Command: jmp      simulator.js:54:4
+Param 1: 0,0,0,1  simulator.js:64:7
+Param 2: 1,1,0,1  simulator.js:65:7
+Command: jmp      simulator.js:54:4
+Param 1: 0,0,0,1  simulator.js:64:7
+Param 2: 1,1,0,1
+
+
+*// r0 = 0
+ldr 0000 0000
+*// a = 0 => beq=> jmp tp label2
+beq label2    
+*// We don't get to this jmp
+jmp label1     
+nop
+nop
+nop
+nop
+label1:
+jmp label1
+nop
+nop
+nop
+nop
+label2:
+jmp label2
+
+
+Command: ldr         simulator.js:54:4
+Param 1: 0,0,0,0     simulator.js:64:7
+Param 2: 0,0,0,0     simulator.js:65:7
+Command: beq         simulator.js:54:4
+Param 1: 0,0,1,0     simulator.js:64:7
+Param 2: 0,1,0,0     simulator.js:65:7
+Command: jmp         simulator.js:54:4
+Param 1: 0,0,0,1     simulator.js:64:7
+Param 2: 1,1,0,1     simulator.js:65:7
+
+// Nooo, it did jmp to label1 =(... Oh typo.
+
+label1 0,0,0,1  1,1,0,1
+label2 0,0,1,0  0,1,0,0
+
+
+// Too easy to mix up things, let's start over. Dear Diary, today it is easy to lost focus.
+
+// Let's test BEQ, so jump if Z flag is 1
+
+*// Set Z flag, ldr reg 0000
+ldr 0000 0000
+*// Jump to label 2 if Z is 1
+beq label2
+*// We should not get here
+label1:
+jmp label1
+nop
+nop
+nop
+*// We should get stuck here
+label2:
+jmp label2
+
+ldr 0000 0000
+beq 0001 1100     Label2 = 0001 1100
+jmp 0001 0110     Label1 = 0001 0110
+nop
+nop
+nop
+jmp 0001 1100
+
+0100
+0000
+0001
+1110
+0001
+1100
+0001
+0001
+0110
+0000
+0000
+0000
+0001
+0001
+1100
+
+// We got stuck on wrong place again...
+// bne,beq didn't work

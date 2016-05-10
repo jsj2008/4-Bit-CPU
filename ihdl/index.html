@@ -47,12 +47,13 @@
 1100
 </textarea>
 <br>
-<button onclick="program()">Program</button>
-<br>
-<button onclick="simulate_one_tick()">Simulate one Cycle</button>
-<br>
-<button onclick="update_values()">Update values</button>
-<br>
+<button onclick="program()">Program</button><br>
+<button onclick="simulate_one_tick()">Simulate one Cycle</button><br>
+<input type="number" id="simulated_tics"></input>
+<button onclick="simulate_many_ticks()">Simulate Cycles</button><br>
+<button onclick="update_values()">Update values</button><br>
+
+
 
 <table border=1>
    <tr><td>PC</td><td id="info_pc"></td></tr>
@@ -100,7 +101,7 @@ function test(){
    console.log("Remember to do that before doing JS-development");
    console.log("and figuring out why it wont work anymore.");   
    update_values();
-
+   
 }
 
 
