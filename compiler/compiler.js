@@ -52,13 +52,24 @@ function parse(){
          if( code[n]  == '='){
             var statement = [];
 
-            for( var i = n-1 ; code[i] != ';' ; i++){
+            for( var i = n-1 ; code[+i] != ';' ; i++){
                statement.push(code[i]);
             }
             // where to store end result
             var to_where = variables.indexOf(statement[0]);
-            // Statement to evaluate
-            console.log("statement:  " + statement.slice(2, statement.length));
+               
+            // If there's just assignment
+            if ( statement.length == 3 ){
+               // is the right side number, variable or error?
+               if ( (!isNaN(parseInt(statement[2]))) ){
+                  // just number, assign it to left side
+                  variable_values[to_where] = statement[2];
+               }
+               else if( value_in_array(statement[2] , variables) ){
+                  // it was variable, assign it's value to left
+                  variable_values[to_where] = variable_values[variables.indexOf(statement[2])];
+               }
+            }
          } 
 
 
